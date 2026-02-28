@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selectra — Alpine.js + Tailwind CSS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script type="module" src="/src-alpine/index.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    /* Inline the component styles for the demo */
+    @keyframes fade-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes dropdown-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fade-in 0.15s ease-out; }
+    .animate-dropdown-in { animation: dropdown-in 0.15s ease-out; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .animate-spin { animation: spin 0.6s linear infinite; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Selectra</h1>
+      <p class="text-gray-500 text-lg">Alpine.js + Tailwind CSS — No jQuery required</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 1: Single Select -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Single Select</h2>
+      <p class="text-sm text-gray-500 mb-4">Basic single-value selection with search.</p>
+
+      <div x-data="singleSelect()" class="relative max-w-md" x-cloak>
+        <!-- Hidden source element -->
+        <input type="hidden" :value="getValue()">
+
+        <!-- Control -->
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+               'opacity-50 pointer-events-none': isDisabled,
+             }"
+             class="relative flex items-center w-full min-h-[42px] px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer transition-all hover:border-gray-400">
+
+          <!-- Current value display -->
+          <span x-show="items.length && !isFocused" x-text="currentValueText"
+                class="truncate text-gray-900"></span>
+
+          <!-- Search input -->
+          <input x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 x-show="isFocused || !items.length"
+                 class="flex-1 min-w-0 bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400">
+
+          <!-- Arrow -->
+          <svg :class="{'rotate-180': isOpen}"
+               class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform duration-200"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        <!-- Dropdown -->
+        <div x-show="isOpen" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto py-1">
+            <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
+              <div @click="selectOption(option)"
+                   @mouseenter="activeIndex = index"
+                   :data-active="activeIndex === index"
+                   :class="{
+                     'bg-blue-500 text-white': activeIndex === index,
+                     'text-gray-700': activeIndex !== index,
+                   }"
+                   class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                   x-html="renderOption(option)">
+              </div>
+            </template>
+            <div x-show="filteredOptions.length === 0 && !isLoading"
+                 class="px-3 py-3 text-center text-gray-400 text-sm"
+                 x-html="renderNoResults()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 2: Multi Select with Tags -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select (Tags)</h2>
+      <p class="text-sm text-gray-500 mb-4">Select multiple values with removable tags.</p>
+
+      <div x-data="multiSelect()" class="relative max-w-md" x-cloak>
+        <!-- Control -->
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+               'opacity-50 pointer-events-none': isDisabled,
+             }"
+             class="relative flex flex-wrap items-center gap-1 w-full min-h-[42px] px-2 py-1.5 bg-white border border-gray-300 rounded-lg cursor-text transition-all hover:border-gray-400">
+
+          <!-- Selected items -->
+          <template x-for="val in items" :key="val">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-sm animate-fade-in">
+              <span x-text="options[val]?.text || val"></span>
+              <button @click.stop="removeItem(val)" type="button"
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full text-blue-400 hover:text-blue-600 hover:bg-blue-100 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </template>
+
+          <!-- Search input -->
+          <input x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 @paste="onPaste($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 :style="{ width: Math.max(60, (query.length + 1) * 8) + 'px' }"
+                 class="flex-1 min-w-[60px] bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400 text-sm">
+        </div>
+
+        <!-- Dropdown -->
+        <div x-show="isOpen" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto py-1">
+            <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
+              <div @click="selectOption(option)"
+                   @mouseenter="activeIndex = index"
+                   :data-active="activeIndex === index"
+                   :class="{
+                     'bg-blue-500 text-white': activeIndex === index,
+                     'text-gray-700': activeIndex !== index,
+                   }"
+                   class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                   x-html="renderOption(option)">
+              </div>
+            </template>
+            <div x-show="filteredOptions.length === 0 && !isLoading"
+                 class="px-3 py-3 text-center text-gray-400 text-sm">
+              No results found
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 3: Tagging (Create New) -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Tagging</h2>
+      <p class="text-sm text-gray-500 mb-4">Type to create new tags on the fly. Supports paste with comma-separated values.</p>
+
+      <div x-data="taggingSelect()" class="relative max-w-md" x-cloak>
+        <!-- Control -->
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+             }"
+             class="relative flex flex-wrap items-center gap-1 w-full min-h-[42px] px-2 py-1.5 bg-white border border-gray-300 rounded-lg cursor-text transition-all hover:border-gray-400">
+
+          <template x-for="val in items" :key="val">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm animate-fade-in">
+              <span x-text="options[val]?.text || val"></span>
+              <button @click.stop="removeItem(val)" type="button"
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full text-emerald-400 hover:text-emerald-600 hover:bg-emerald-100 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </template>
+
+          <input x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 @paste="onPaste($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 :style="{ width: Math.max(60, (query.length + 1) * 8) + 'px' }"
+                 class="flex-1 min-w-[60px] bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400 text-sm">
+        </div>
+
+        <!-- Dropdown -->
+        <div x-show="isOpen && (filteredOptions.length > 0 || canCreate)" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto py-1">
+            <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
+              <div @click="selectOption(option)"
+                   @mouseenter="activeIndex = index"
+                   :data-active="activeIndex === index"
+                   :class="{
+                     'bg-blue-500 text-white': activeIndex === index,
+                     'text-gray-700': activeIndex !== index,
+                   }"
+                   class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                   x-html="renderOption(option)">
+              </div>
+            </template>
+            <!-- Create option -->
+            <div x-show="canCreate"
+                 @click="createItem()"
+                 @mouseenter="activeIndex = filteredOptions.length"
+                 :data-active="activeIndex === filteredOptions.length"
+                 :class="{
+                   'bg-blue-500 text-white': activeIndex === filteredOptions.length,
+                   'text-gray-500': activeIndex !== filteredOptions.length,
+                 }"
+                 class="px-3 py-2 cursor-pointer transition-colors duration-75 border-t border-gray-100"
+                 x-html="renderOptionCreate()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 4: Optgroups -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Option Groups</h2>
+      <p class="text-sm text-gray-500 mb-4">Grouped options with headers.</p>
+
+      <div x-data="groupedSelect()" class="relative max-w-md" x-cloak>
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+             }"
+             class="relative flex items-center w-full min-h-[42px] px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer transition-all hover:border-gray-400">
+          <span x-show="items.length && !isFocused" x-text="currentValueText"
+                class="truncate text-gray-900"></span>
+          <input x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 x-show="isFocused || !items.length"
+                 class="flex-1 min-w-0 bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400">
+          <svg :class="{'rotate-180': isOpen}"
+               class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform duration-200"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        <div x-show="isOpen" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto">
+            <template x-for="group in getGroupedOptions()" :key="group.id || '__ungrouped'">
+              <div>
+                <div x-show="group.label" x-text="group.label"
+                     class="px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-100 sticky top-0">
+                </div>
+                <template x-for="(option, index) in group.options" :key="optionKey(option)">
+                  <div @click="selectOption(option)"
+                       @mouseenter="activeIndex = getGlobalIndex(group, index)"
+                       :data-active="activeIndex === getGlobalIndex(group, index)"
+                       :class="{
+                         'bg-blue-500 text-white': activeIndex === getGlobalIndex(group, index),
+                         'text-gray-700': activeIndex !== getGlobalIndex(group, index),
+                       }"
+                       class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                       x-html="renderOption(option)">
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 5: Remote Loading -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading</h2>
+      <p class="text-sm text-gray-500 mb-4">Search loads results from a simulated API. Try typing "a", "b", or "c".</p>
+
+      <div x-data="remoteSelect()" class="relative max-w-md" x-cloak>
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+             }"
+             class="relative flex flex-wrap items-center gap-1 w-full min-h-[42px] px-2 py-1.5 bg-white border border-gray-300 rounded-lg cursor-text transition-all hover:border-gray-400">
+          <template x-for="val in items" :key="val">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200 text-sm animate-fade-in">
+              <span x-text="options[val]?.text || val"></span>
+              <button @click.stop="removeItem(val)" type="button"
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full text-violet-400 hover:text-violet-600 hover:bg-violet-100 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </template>
+          <input x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 :style="{ width: Math.max(60, (query.length + 1) * 8) + 'px' }"
+                 class="flex-1 min-w-[60px] bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400 text-sm">
+
+          <!-- Loading spinner -->
+          <div x-show="isLoading" class="flex-shrink-0 ml-1">
+            <div class="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          </div>
+        </div>
+
+        <div x-show="isOpen" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto py-1">
+            <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
+              <div @click="selectOption(option)"
+                   @mouseenter="activeIndex = index"
+                   :data-active="activeIndex === index"
+                   :class="{
+                     'bg-blue-500 text-white': activeIndex === index,
+                     'text-gray-700': activeIndex !== index,
+                   }"
+                   class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                   x-html="renderOption(option)">
+              </div>
+            </template>
+            <div x-show="isLoading"
+                 class="px-3 py-3 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+              <div class="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              Loading...
+            </div>
+            <div x-show="filteredOptions.length === 0 && !isLoading && query.length > 0"
+                 class="px-3 py-3 text-center text-gray-400 text-sm">
+              No results found
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- Demo 6: Max Items -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Max Items Limit</h2>
+      <p class="text-sm text-gray-500 mb-4">Limited to 3 items maximum.</p>
+
+      <div x-data="maxItemsSelect()" class="relative max-w-md" x-cloak>
+        <div @click="focus()"
+             :class="{
+               'ring-2 ring-blue-500/20 border-blue-500': isFocused,
+             }"
+             class="relative flex flex-wrap items-center gap-1 w-full min-h-[42px] px-2 py-1.5 bg-white border border-gray-300 rounded-lg cursor-text transition-all hover:border-gray-400">
+          <template x-for="val in items" :key="val">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-sm animate-fade-in">
+              <span x-text="options[val]?.text || val"></span>
+              <button @click.stop="removeItem(val)" type="button"
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full text-amber-400 hover:text-amber-600 hover:bg-amber-100 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </template>
+          <input x-show="!isFull" x-ref="searchInput"
+                 x-model="query"
+                 @input="onInput()"
+                 @focus="focus()"
+                 @blur.debounce.150ms="blur()"
+                 @keydown="onKeyDown($event)"
+                 :placeholder="items.length ? '' : placeholderText"
+                 :style="{ width: Math.max(60, (query.length + 1) * 8) + 'px' }"
+                 class="flex-1 min-w-[60px] bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400 text-sm">
+          <span x-show="isFull" class="text-xs text-gray-400 ml-1">Max reached</span>
+        </div>
+
+        <div x-show="isOpen && !isFull" x-ref="dropdown" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-1"
+             class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <div class="max-h-60 overflow-y-auto py-1">
+            <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
+              <div @click="selectOption(option)"
+                   @mouseenter="activeIndex = index"
+                   :data-active="activeIndex === index"
+                   :class="{
+                     'bg-blue-500 text-white': activeIndex === index,
+                     'text-gray-700': activeIndex !== index,
+                   }"
+                   class="px-3 py-2 cursor-pointer transition-colors duration-75"
+                   x-html="renderOption(option)">
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
+      <p>Selectra — rebuilt with Alpine.js &amp; Tailwind CSS</p>
+    </footer>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- Component Data Definitions (inline for demo) -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <script>
+    // Sifter (inline minimal version for demo)
+    class Sifter {
+      constructor(items, settings = {}) {
+        this.items = items;
+        this.settings = { diacritics: true, ...settings };
+      }
+      tokenize(query) {
+        query = String(query || '').toLowerCase().trim();
+        if (!query.length) return [];
+        return query.split(/\s+/).map(word => ({
+          string: word,
+          regex: new RegExp(word.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'), 'i')
+        }));
+      }
+      search(query, options = {}) {
+        const q = String(query || '').toLowerCase().trim();
+        const fields = options.fields || ['text'];
+        const search = { query: q, tokens: this.tokenize(q), total: 0, items: [] };
+        const items = this.items;
+        const keys = Array.isArray(items) ? items.map((_, i) => i) : Object.keys(items);
+
+        for (const key of keys) {
+          const item = items[key];
+          if (!q.length) {
+            search.items.push({ score: 1, id: key });
+            continue;
+          }
+          let score = 0;
+          for (const token of search.tokens) {
+            let tokenScore = 0;
+            for (const field of fields) {
+              const value = String(item[field] || '').toLowerCase();
+              const pos = value.search(token.regex);
+              if (pos !== -1) {
+                let s = token.string.length / value.length;
+                if (pos === 0) s += 0.5;
+                tokenScore += s;
+              }
+            }
+            score += tokenScore / fields.length;
+          }
+          if (options.conjunction === 'and' && score <= 0) continue;
+          if (score > 0 || !q.length) search.items.push({ score, id: key });
+        }
+
+        search.items.sort((a, b) => b.score - a.score);
+        search.total = search.items.length;
+        if (typeof options.limit === 'number') search.items = search.items.slice(0, options.limit);
+        return search;
+      }
+    }
+
+    // ── Helper: escape HTML ───────────────────────────────
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function hashKey(value) {
+      if (value == null) return null;
+      return String(value);
+    }
+
+    function highlight(text, query) {
+      if (!query) return escapeHtml(text);
+      const escaped = escapeHtml(text);
+      const regex = new RegExp('(' + query.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + ')', 'ig');
+      return escaped.replace(regex, '<span class="font-semibold underline decoration-blue-300">$1</span>');
+    }
+
+    // ── Base component factory ────────────────────────────
+    function createSelectra(userConfig = {}) {
+      const config = {
+        delimiter: ',',
+        create: false,
+        highlight: true,
+        openOnFocus: true,
+        maxOptions: 1000,
+        maxItems: null,
+        hideSelected: null,
+        selectOnTab: true,
+        closeAfterSelect: false,
+        placeholder: '',
+        mode: null,
+        search: true,
+        valueField: 'value',
+        labelField: 'text',
+        disabledField: 'disabled',
+        optgroupField: 'optgroup',
+        optgroupLabelField: 'label',
+        searchField: ['text'],
+        searchConjunction: 'and',
+        createFilter: null,
+        createOnBlur: false,
+        setFirstOptionActive: false,
+        splitOn: null,
+        normalize: true,
+        sortField: '$order',
+        load: null,
+        loadThrottle: 300,
+        preload: false,
+        render: {},
+        plugins: [],
+        options: [],
+        optgroups: [],
+        items: [],
+        ...userConfig,
+      };
+
+      // Determine mode
+      if (!config.mode) config.mode = config.maxItems === 1 ? 'single' : 'multi';
+      if (config.mode === 'single') config.maxItems = 1;
+      if (config.hideSelected === null) config.hideSelected = config.mode === 'multi';
+
+      // Build options hash
+      const optionsHash = {};
+      let orderCounter = 0;
+      for (const opt of config.options) {
+        const key = hashKey(opt[config.valueField]);
+        if (key !== null) {
+          opt.$order = ++orderCounter;
+          optionsHash[key] = opt;
+        }
+      }
+
+      // Build optgroups hash
+      const optgroupsHash = {};
+      for (const og of config.optgroups) {
+        optgroupsHash[og.value || og.label] = og;
+      }
+
+      const sifter = new Sifter(optionsHash, { diacritics: true });
+      let debouncedLoad = null;
+      if (config.load && config.loadThrottle) {
+        let timer;
+        debouncedLoad = (q, fn) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn(q), config.loadThrottle);
+        };
+      }
+
+      return {
+        // State
+        isOpen: false,
+        isFocused: false,
+        isDisabled: false,
+        isLocked: false,
+        isLoading: false,
+        query: '',
+        activeIndex: -1,
+        caretPos: 0,
+        items: [...config.items],
+        options: optionsHash,
+        optgroups: optgroupsHash,
+        optionOrder: Object.keys(optionsHash),
+        loadedSearches: {},
+        _config: config,
+        _sifter: sifter,
+        _orderCounter: orderCounter,
+        _onClickOutside: null,
+
+        get isMultiple() { return this._config.mode === 'multi'; },
+        get isSingle() { return this._config.mode === 'single'; },
+        get isFull() { return this._config.maxItems !== null && this.items.length >= this._config.maxItems; },
+
+        get canCreate() {
+          if (!this._config.create) return false;
+          if (!this.query.trim()) return false;
+          if (this.isFull) return false;
+          if (this._config.createFilter) {
+            const f = this._config.createFilter;
+            if (typeof f === 'function') return f(this.query);
+            if (f instanceof RegExp) return f.test(this.query);
+          }
+          const existing = Object.values(this.options).find(
+            o => (o[this._config.labelField] || '').toLowerCase() === this.query.toLowerCase()
+          );
+          return !existing;
+        },
+
+        get selectedItems() {
+          return this.items.map(v => this.options[v]).filter(Boolean);
+        },
+
+        get filteredOptions() {
+          const c = this._config;
+          this._sifter.items = this.options;
+          const results = this._sifter.search(this.query, {
+            fields: c.searchField,
+            conjunction: c.searchConjunction,
+            limit: c.maxOptions,
+          });
+          let filtered = results.items
+            .map(r => this.options[r.id])
+            .filter(Boolean);
+          if (c.hideSelected) {
+            filtered = filtered.filter(o => !this.items.includes(hashKey(o[c.valueField])));
+          }
+          filtered = filtered.filter(o => !o[c.disabledField]);
+          return filtered;
+        },
+
+        get placeholderText() {
+          if (this.items.length > 0 && this.isSingle) return '';
+          return this._config.placeholder || '';
+        },
+
+        get currentValueText() {
+          if (!this.isSingle || !this.items.length) return '';
+          const opt = this.options[this.items[0]];
+          return opt ? opt[this._config.labelField] : '';
+        },
+
+        // Methods
+        init() {
+          this._onClickOutside = (e) => {
+            if (!this.$el.contains(e.target)) {
+              this.close();
+              this.blur();
+            }
+          };
+          document.addEventListener('mousedown', this._onClickOutside);
+
+          if (this._config.preload === true) {
+            this.$nextTick(() => this._performLoad(''));
+          }
+        },
+
+        destroy() {
+          if (this._onClickOutside) {
+            document.removeEventListener('mousedown', this._onClickOutside);
+          }
+        },
+
+        addOption(data, silent = false) {
+          if (Array.isArray(data)) { data.forEach(d => this.addOption(d, silent)); return; }
+          const key = hashKey(data[this._config.valueField]);
+          if (key === null || this.options[key]) return;
+          data.$order = ++this._orderCounter;
+          this.options[key] = data;
+          this.optionOrder.push(key);
+          this._sifter.items = this.options;
+        },
+
+        addItem(value, silent = false) {
+          const key = hashKey(value);
+          if (!key || !this.options[key]) return;
+          if (this.items.includes(key)) return;
+          if (this.isFull) return;
+          if (this.isSingle && this.items.length) this.items = [];
+          this.items.push(key);
+          this.caretPos = this.items.length;
+          this.query = '';
+          if (this._config.closeAfterSelect || this.isSingle) this.close();
+          if (this.isFull) this.close();
+        },
+
+        removeItem(value, silent = false) {
+          const key = hashKey(value);
+          const idx = this.items.indexOf(key);
+          if (idx === -1) return;
+          this.items.splice(idx, 1);
+        },
+
+        clear(silent = false) {
+          this.items = [];
+        },
+
+        getValue() {
+          if (this.isSingle) return this.items.length ? this.items[0] : '';
+          return [...this.items];
+        },
+
+        setValue(value) {
+          this.items = [];
+          const vals = Array.isArray(value) ? value : [value];
+          for (const v of vals) {
+            if (v != null && v !== '') this.addItem(v, true);
+          }
+        },
+
+        createItem(input = null) {
+          const val = (input !== null ? input : this.query).trim();
+          if (!val || !this._config.create) return;
+          const c = this._config;
+          let data;
+          if (typeof c.create === 'function') {
+            data = c.create(val, (result) => {
+              if (result) { this.addOption(result); this.addItem(result[c.valueField]); }
+            });
+            if (data && typeof data === 'object') { this.addOption(data); this.addItem(data[c.valueField]); }
+          } else {
+            data = {}; data[c.valueField] = val; data[c.labelField] = val;
+            this.addOption(data); this.addItem(val);
+          }
+          this.query = '';
+        },
+
+        selectOption(option) {
+          if (!option || option[this._config.disabledField]) return;
+          this.addItem(option[this._config.valueField]);
+          this.query = '';
+          if (this.$refs.searchInput) {
+            this.$refs.searchInput.focus();
+          }
+        },
+
+        open() {
+          if (this.isOpen || this.isDisabled || this.isLocked) return;
+          this.isOpen = true;
+          this.activeIndex = this._config.setFirstOptionActive ? 0 : -1;
+          this.$nextTick(() => this._scrollToActive());
+        },
+
+        close() {
+          if (!this.isOpen) return;
+          this.isOpen = false;
+          this.activeIndex = -1;
+        },
+
+        toggle() { this.isOpen ? this.close() : this.open(); },
+
+        focus() {
+          if (this.isDisabled) return;
+          this.isFocused = true;
+          if (this.$refs.searchInput) this.$nextTick(() => this.$refs.searchInput.focus());
+          if (this._config.openOnFocus) this.open();
+          if (this._config.preload === 'focus' && !this.loadedSearches['']) {
+            this._performLoad('');
+          }
+        },
+
+        blur() {
+          if (!this.isFocused) return;
+          this.isFocused = false;
+          if (this._config.createOnBlur && this.query.trim() && this.canCreate) this.createItem();
+          this.close();
+        },
+
+        onKeyDown(e) {
+          if (this.isDisabled || this.isLocked) return;
+          const opts = this.filteredOptions;
+          const canCreateNow = this.canCreate;
+          const total = opts.length + (canCreateNow ? 1 : 0);
+
+          switch (e.key) {
+            case 'ArrowDown':
+              e.preventDefault();
+              if (!this.isOpen) { this.open(); }
+              else { this.activeIndex = Math.min(this.activeIndex + 1, total - 1); this._scrollToActive(); }
+              break;
+            case 'ArrowUp':
+              e.preventDefault();
+              if (this.isOpen) { this.activeIndex = Math.max(this.activeIndex - 1, 0); this._scrollToActive(); }
+              break;
+            case 'Enter':
+              e.preventDefault();
+              if (this.isOpen && this.activeIndex >= 0) {
+                if (this.activeIndex < opts.length) this.selectOption(opts[this.activeIndex]);
+                else if (canCreateNow) this.createItem();
+              } else if (!this.isOpen) this.open();
+              break;
+            case 'Escape':
+              e.preventDefault(); this.close(); break;
+            case 'Tab':
+              if (this.isOpen && this._config.selectOnTab && this.activeIndex >= 0) {
+                e.preventDefault();
+                if (this.activeIndex < opts.length) this.selectOption(opts[this.activeIndex]);
+                else if (canCreateNow) this.createItem();
+              }
+              break;
+            case 'Backspace':
+            case 'Delete':
+              if (!this.query && this.items.length && this.isMultiple) {
+                e.preventDefault();
+                this.removeItem(this.items[this.items.length - 1]);
+              }
+              break;
+          }
+        },
+
+        onInput() {
+          if (!this.isOpen) this.open();
+          this.activeIndex = this.query ? 0 : -1;
+          if (this._config.load && this.query) {
+            const q = this.query;
+            if (!this.loadedSearches[q]) {
+              if (debouncedLoad) debouncedLoad(q, (qq) => this._performLoad(qq));
+              else this._performLoad(q);
+            }
+          }
+        },
+
+        onPaste(e) {
+          if (!this.isMultiple) return;
+          const paste = (e.clipboardData || window.clipboardData).getData('text');
+          if (!paste) return;
+          const splitOn = this._config.splitOn || this._config.delimiter;
+          if (!splitOn) return;
+          e.preventDefault();
+          const regex = splitOn instanceof RegExp ? splitOn : new RegExp('[' + splitOn.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + ']');
+          const parts = paste.split(regex).map(s => s.trim()).filter(Boolean);
+          for (const part of parts) {
+            const c = this._config;
+            const match = Object.values(this.options).find(
+              o => (o[c.labelField]||'').toLowerCase() === part.toLowerCase() ||
+                   (o[c.valueField]||'').toLowerCase() === part.toLowerCase()
+            );
+            if (match) this.addItem(match[c.valueField]);
+            else if (c.create) this.createItem(part);
+          }
+        },
+
+        _performLoad(query) {
+          if (!this._config.load) return;
+          if (this.loadedSearches[query]) return;
+          this.isLoading = true;
+          this.loadedSearches[query] = true;
+          this._config.load(query, (results) => {
+            this.isLoading = false;
+            if (results && Array.isArray(results)) {
+              for (const item of results) this.addOption(item, true);
+            }
+          });
+        },
+
+        renderOption(option) {
+          const c = this._config;
+          const label = option[c.labelField] || '';
+          if (c.render?.option) return c.render.option(option, escapeHtml);
+          if (c.highlight && this.query) return highlight(label, this.query);
+          return escapeHtml(label);
+        },
+
+        renderItem(option) {
+          const c = this._config;
+          if (c.render?.item) return c.render.item(option, escapeHtml);
+          return escapeHtml(option[c.labelField] || '');
+        },
+
+        renderOptionCreate() {
+          const c = this._config;
+          if (c.render?.optionCreate) return c.render.optionCreate({ input: this.query }, escapeHtml);
+          return `Add <span class="font-medium">${escapeHtml(this.query)}</span>...`;
+        },
+
+        renderNoResults() {
+          const c = this._config;
+          if (c.render?.noResults) return c.render.noResults({ query: this.query }, escapeHtml);
+          return 'No results found';
+        },
+
+        optionKey(option) { return hashKey(option[this._config.valueField]); },
+
+        isSelected(option) {
+          return this.items.includes(hashKey(option[this._config.valueField]));
+        },
+
+        getGroupedOptions() {
+          const options = this.filteredOptions;
+          const c = this._config;
+          const groups = {};
+          const ungrouped = [];
+          for (const opt of options) {
+            const gid = opt[c.optgroupField];
+            if (gid && this.optgroups[gid]) {
+              if (!groups[gid]) groups[gid] = [];
+              groups[gid].push(opt);
+            } else {
+              ungrouped.push(opt);
+            }
+          }
+          const result = [];
+          for (const [id, items] of Object.entries(groups)) {
+            result.push({ id, label: this.optgroups[id]?.[c.optgroupLabelField] || id, options: items });
+          }
+          if (ungrouped.length) result.push({ id: null, label: null, options: ungrouped });
+          return result;
+        },
+
+        getGlobalIndex(group, localIndex) {
+          const groups = this.getGroupedOptions();
+          let idx = 0;
+          for (const g of groups) {
+            if (g.id === group.id) return idx + localIndex;
+            idx += g.options.length;
+          }
+          return localIndex;
+        },
+
+        _scrollToActive() {
+          this.$nextTick(() => {
+            const dropdown = this.$refs.dropdown;
+            if (!dropdown) return;
+            const active = dropdown.querySelector('[data-active="true"]');
+            if (active) active.scrollIntoView({ block: 'nearest' });
+          });
+        },
+
+        lock() { this.isLocked = true; this.close(); },
+        unlock() { this.isLocked = false; },
+        disable() { this.isDisabled = true; this.close(); },
+        enable() { this.isDisabled = false; },
+      };
+    }
+
+    // ── Demo Data ─────────────────────────────────────────
+    const countries = [
+      { value: 'us', text: 'United States' },
+      { value: 'ca', text: 'Canada' },
+      { value: 'mx', text: 'Mexico' },
+      { value: 'gb', text: 'United Kingdom' },
+      { value: 'fr', text: 'France' },
+      { value: 'de', text: 'Germany' },
+      { value: 'it', text: 'Italy' },
+      { value: 'es', text: 'Spain' },
+      { value: 'pt', text: 'Portugal' },
+      { value: 'nl', text: 'Netherlands' },
+      { value: 'be', text: 'Belgium' },
+      { value: 'ch', text: 'Switzerland' },
+      { value: 'at', text: 'Austria' },
+      { value: 'au', text: 'Australia' },
+      { value: 'nz', text: 'New Zealand' },
+      { value: 'jp', text: 'Japan' },
+      { value: 'kr', text: 'South Korea' },
+      { value: 'cn', text: 'China' },
+      { value: 'in', text: 'India' },
+      { value: 'br', text: 'Brazil' },
+      { value: 'ar', text: 'Argentina' },
+      { value: 'za', text: 'South Africa' },
+      { value: 'ng', text: 'Nigeria' },
+      { value: 'eg', text: 'Egypt' },
+      { value: 'se', text: 'Sweden' },
+      { value: 'no', text: 'Norway' },
+      { value: 'dk', text: 'Denmark' },
+      { value: 'fi', text: 'Finland' },
+      { value: 'pl', text: 'Poland' },
+      { value: 'ie', text: 'Ireland' },
+    ];
+
+    const programmingLanguages = [
+      { value: 'js', text: 'JavaScript' },
+      { value: 'ts', text: 'TypeScript' },
+      { value: 'py', text: 'Python' },
+      { value: 'rb', text: 'Ruby' },
+      { value: 'go', text: 'Go' },
+      { value: 'rs', text: 'Rust' },
+      { value: 'java', text: 'Java' },
+      { value: 'cs', text: 'C#' },
+      { value: 'cpp', text: 'C++' },
+      { value: 'swift', text: 'Swift' },
+      { value: 'kt', text: 'Kotlin' },
+      { value: 'php', text: 'PHP' },
+      { value: 'elixir', text: 'Elixir' },
+      { value: 'zig', text: 'Zig' },
+      { value: 'lua', text: 'Lua' },
+    ];
+
+    const groupedOptions = [
+      { value: 'alpha', text: 'Alpha', optgroup: 'greek' },
+      { value: 'beta', text: 'Beta', optgroup: 'greek' },
+      { value: 'gamma', text: 'Gamma', optgroup: 'greek' },
+      { value: 'delta', text: 'Delta', optgroup: 'greek' },
+      { value: 'a', text: 'A', optgroup: 'latin' },
+      { value: 'b', text: 'B', optgroup: 'latin' },
+      { value: 'c', text: 'C', optgroup: 'latin' },
+      { value: 'd', text: 'D', optgroup: 'latin' },
+      { value: '1', text: 'One', optgroup: 'numbers' },
+      { value: '2', text: 'Two', optgroup: 'numbers' },
+      { value: '3', text: 'Three', optgroup: 'numbers' },
+      { value: '4', text: 'Four', optgroup: 'numbers' },
+    ];
+
+    // ── Demo Components ───────────────────────────────────
+    function singleSelect() {
+      return createSelectra({
+        mode: 'single',
+        options: countries,
+        placeholder: 'Select a country...',
+        items: ['us'],
+      });
+    }
+
+    function multiSelect() {
+      return createSelectra({
+        mode: 'multi',
+        options: programmingLanguages,
+        placeholder: 'Select languages...',
+        items: ['js', 'py'],
+      });
+    }
+
+    function taggingSelect() {
+      return createSelectra({
+        mode: 'multi',
+        create: true,
+        options: [
+          { value: 'bug', text: 'bug' },
+          { value: 'feature', text: 'feature' },
+          { value: 'enhancement', text: 'enhancement' },
+          { value: 'documentation', text: 'documentation' },
+          { value: 'help-wanted', text: 'help wanted' },
+        ],
+        placeholder: 'Add tags...',
+        createOnBlur: true,
+        closeAfterSelect: true,
+      });
+    }
+
+    function groupedSelect() {
+      return createSelectra({
+        mode: 'single',
+        options: groupedOptions,
+        optgroups: [
+          { value: 'greek', label: 'Greek Letters' },
+          { value: 'latin', label: 'Latin Letters' },
+          { value: 'numbers', label: 'Numbers' },
+        ],
+        placeholder: 'Choose...',
+      });
+    }
+
+    function remoteSelect() {
+      // Simulate remote API
+      const allItems = [
+        ...countries.map(c => ({ ...c, text: c.text + ' (country)' })),
+        ...programmingLanguages.map(l => ({ ...l, value: 'lang-' + l.value, text: l.text + ' (language)' })),
+      ];
+
+      return createSelectra({
+        mode: 'multi',
+        placeholder: 'Type to search...',
+        load: (query, callback) => {
+          // Simulate API delay
+          setTimeout(() => {
+            const results = allItems.filter(item =>
+              item.text.toLowerCase().includes(query.toLowerCase())
+            );
+            callback(results);
+          }, 500);
+        },
+        loadThrottle: 300,
+      });
+    }
+
+    function maxItemsSelect() {
+      return createSelectra({
+        mode: 'multi',
+        maxItems: 3,
+        options: countries,
+        placeholder: 'Pick up to 3...',
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,7 +1,0 @@
-paths:
-  - src
-  - dist
-paths-ignore:
-  - docs
-  - examples
-  - test

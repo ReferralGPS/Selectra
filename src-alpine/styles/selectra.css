@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Selectra - Tailwind CSS Component Styles
+ *
+ * These styles use @apply to create component classes that work
+ * with dynamically generated markup. Override with Tailwind utilities.
+ */
+
+@layer components {
+  /* ── Wrapper ─────────────────────────────────────────── */
+  .selectra-control {
+    @apply relative w-full text-sm;
+  }
+
+  .selectra-control.is-disabled {
+    @apply opacity-50 pointer-events-none;
+  }
+
+  /* ── Input Wrapper ───────────────────────────────────── */
+  .selectra-input {
+    @apply relative flex flex-wrap items-center gap-1
+           w-full min-h-[38px] px-3 py-1.5
+           bg-white border border-gray-300 rounded-lg
+           cursor-text transition-all duration-150
+           text-gray-900;
+  }
+
+  .selectra-input:hover {
+    @apply border-gray-400;
+  }
+
+  .selectra-input.is-focused {
+    @apply border-blue-500 ring-2 ring-blue-500/20 outline-none;
+  }
+
+  .selectra-input.is-invalid {
+    @apply border-red-500 ring-2 ring-red-500/20;
+  }
+
+  .selectra-input.is-locked {
+    @apply bg-gray-50 cursor-default;
+  }
+
+  .selectra-input.is-single {
+    @apply cursor-pointer pr-8;
+  }
+
+  .selectra-input.is-single.has-items .selectra-search {
+    @apply absolute inset-0 px-3 py-1.5;
+  }
+
+  /* ── Search Input ────────────────────────────────────── */
+  .selectra-search {
+    @apply flex-1 min-w-[60px] bg-transparent
+           outline-none border-none p-0 m-0
+           text-gray-900 placeholder-gray-400;
+  }
+
+  .selectra-search:focus {
+    @apply outline-none ring-0;
+  }
+
+  .selectra-input.is-single .selectra-search {
+    @apply min-w-0 w-full;
+  }
+
+  /* ── Selected Items (Tags) ───────────────────────────── */
+  .selectra-item {
+    @apply inline-flex items-center gap-1
+           px-2 py-0.5 rounded-md
+           bg-blue-50 text-blue-700 border border-blue-200
+           text-sm leading-snug
+           animate-fade-in;
+  }
+
+  .selectra-item .selectra-item-remove {
+    @apply inline-flex items-center justify-center
+           w-4 h-4 rounded-full
+           text-blue-400 hover:text-blue-600
+           hover:bg-blue-100
+           cursor-pointer transition-colors duration-100
+           -mr-0.5 ml-0.5;
+  }
+
+  /* Single select display */
+  .selectra-single-value {
+    @apply truncate text-gray-900;
+  }
+
+  /* ── Dropdown Arrow ──────────────────────────────────── */
+  .selectra-arrow {
+    @apply absolute right-2.5 top-1/2 -translate-y-1/2
+           w-4 h-4 text-gray-400
+           pointer-events-none transition-transform duration-200;
+  }
+
+  .selectra-arrow.is-open {
+    @apply rotate-180;
+  }
+
+  /* ── Dropdown ────────────────────────────────────────── */
+  .selectra-dropdown {
+    @apply absolute z-50 w-full mt-1
+           bg-white border border-gray-200 rounded-lg
+           shadow-lg overflow-hidden
+           animate-dropdown-in;
+  }
+
+  .selectra-dropdown.is-top {
+    @apply bottom-full top-auto mb-1 mt-0;
+  }
+
+  .selectra-dropdown-content {
+    @apply max-h-60 overflow-y-auto overscroll-contain
+           py-1;
+  }
+
+  /* ── Dropdown Option ─────────────────────────────────── */
+  .selectra-option {
+    @apply px-3 py-2 cursor-pointer
+           text-gray-700 transition-colors duration-75
+           leading-snug;
+  }
+
+  .selectra-option:hover,
+  .selectra-option.is-active {
+    @apply bg-blue-500 text-white;
+  }
+
+  .selectra-option.is-active .highlight {
+    @apply text-white;
+  }
+
+  .selectra-option.is-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .selectra-option.is-selected {
+    @apply bg-blue-50 text-blue-700;
+  }
+
+  .selectra-option.is-selected.is-active {
+    @apply bg-blue-500 text-white;
+  }
+
+  /* ── Option Create ───────────────────────────────────── */
+  .selectra-option-create {
+    @apply px-3 py-2 cursor-pointer
+           text-gray-500 transition-colors duration-75
+           border-t border-gray-100;
+  }
+
+  .selectra-option-create:hover,
+  .selectra-option-create.is-active {
+    @apply bg-blue-500 text-white;
+  }
+
+  /* ── No Results ──────────────────────────────────────── */
+  .selectra-no-results {
+    @apply px-3 py-3 text-center text-gray-400 text-sm;
+  }
+
+  /* ── Loading ─────────────────────────────────────────── */
+  .selectra-loading {
+    @apply px-3 py-3 text-center text-gray-400 text-sm
+           flex items-center justify-center gap-2;
+  }
+
+  .selectra-spinner {
+    @apply w-4 h-4 border-2 border-gray-300
+           border-t-blue-500 rounded-full animate-spin;
+  }
+
+  /* ── Optgroup ────────────────────────────────────────── */
+  .selectra-optgroup-header {
+    @apply px-3 py-1.5 text-xs font-semibold
+           text-gray-500 uppercase tracking-wider
+           bg-gray-50 border-b border-gray-100;
+  }
+
+  .selectra-optgroup + .selectra-optgroup {
+    @apply border-t border-gray-100;
+  }
+
+  /* ── Dropdown Header (plugin) ────────────────────────── */
+  .selectra-dropdown-header {
+    @apply flex items-center justify-between
+           px-3 py-2 bg-gray-50
+           border-b border-gray-200
+           text-sm font-medium text-gray-700;
+  }
+
+  .selectra-dropdown-header .close-btn {
+    @apply w-5 h-5 flex items-center justify-center
+           rounded text-gray-400 hover:text-gray-600
+           hover:bg-gray-200 cursor-pointer transition-colors;
+  }
+
+  /* ── Clear Button (plugin) ───────────────────────────── */
+  .selectra-clear-button {
+    @apply absolute right-7 top-1/2 -translate-y-1/2
+           w-5 h-5 flex items-center justify-center
+           rounded-full text-gray-400 hover:text-gray-600
+           hover:bg-gray-100 cursor-pointer transition-colors
+           z-10;
+  }
+
+  .selectra-input.is-single .selectra-clear-button {
+    @apply right-8;
+  }
+
+  /* ── Tag Limit Badge (plugin) ────────────────────────── */
+  .selectra-tag-limit-badge {
+    @apply inline-flex items-center justify-center
+           px-2 py-0.5 rounded-full
+           bg-gray-100 text-gray-500
+           text-xs font-medium;
+  }
+
+  /* ── Highlight ───────────────────────────────────────── */
+  .highlight {
+    @apply font-semibold text-inherit;
+  }
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dropdown-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.15s ease-out;
+  }
+
+  .animate-dropdown-in {
+    animation: dropdown-in 0.15s ease-out;
+  }
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────── */
+.selectra-dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selectra-dropdown-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selectra-dropdown-content::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 rounded-full;
+}
+
+.selectra-dropdown-content::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-300;
+}
