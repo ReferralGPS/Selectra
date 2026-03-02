@@ -50,6 +50,9 @@ npm install selectra alpinejs
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/selectra/dist/selectra.iife.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/selectra/dist/selectra.css">
+
+<!-- The IIFE build auto-registers with Alpine. Just use x-data + x-selectra: -->
+<div x-data="selectra({ options: [...] })" x-selectra x-cloak></div>
 ```
 
 ---
@@ -61,13 +64,14 @@ npm install selectra alpinejs
 ```js
 import Alpine from 'alpinejs';
 import Selectra from 'selectra';
-import 'selectra/css';
 
 Alpine.plugin(Selectra);
 Alpine.start();
 ```
 
 ### 2. Use in HTML
+
+The `x-selectra` directive automatically renders the full component template — no manual HTML needed.
 
 #### Single Select
 
@@ -80,42 +84,7 @@ Alpine.start();
     { value: 'ca', text: 'Canada' },
     { value: 'mx', text: 'Mexico' },
   ]
-})" class="relative max-w-md">
-
-  <!-- Control -->
-  <div @click="focus()"
-       :class="{ 'ring-2 ring-blue-500/20 border-blue-500': isFocused }"
-       class="relative flex items-center w-full min-h-[42px] px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer hover:border-gray-400">
-
-    <span x-show="items.length && !isFocused" x-text="currentValueText" class="truncate text-gray-900"></span>
-
-    <input x-ref="searchInput" x-model="query"
-           @input="onInput()" @focus="focus()" @blur.debounce.150ms="blur()"
-           @keydown="onKeyDown($event)"
-           :placeholder="placeholderText"
-           x-show="isFocused || !items.length"
-           class="flex-1 min-w-0 bg-transparent outline-none border-none p-0 text-gray-900 placeholder-gray-400">
-
-    <svg :class="{'rotate-180': isOpen}" class="w-4 h-4 text-gray-400 ml-2 transition-transform"
-         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-    </svg>
-  </div>
-
-  <!-- Dropdown -->
-  <div x-show="isOpen" x-ref="dropdown"
-       x-transition class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-    <div class="max-h-60 overflow-y-auto py-1">
-      <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
-        <div @click="selectOption(option)" @mouseenter="activeIndex = index"
-             :class="{ 'bg-blue-500 text-white': activeIndex === index }"
-             class="px-3 py-2 cursor-pointer"
-             x-html="renderOption(option)">
-        </div>
-      </template>
-    </div>
-  </div>
-</div>
+})" x-selectra x-cloak></div>
 ```
 
 #### Multi Select with Tags
@@ -130,42 +99,55 @@ Alpine.start();
     { value: 'py', text: 'Python' },
     { value: 'go', text: 'Go' },
   ]
-})" class="relative max-w-md">
+})" x-selectra x-cloak></div>
+```
 
-  <div @click="focus()"
-       :class="{ 'ring-2 ring-blue-500/20 border-blue-500': isFocused }"
-       class="relative flex flex-wrap items-center gap-1 w-full min-h-[42px] px-2 py-1.5 bg-white border border-gray-300 rounded-lg cursor-text hover:border-gray-400">
+#### Option Groups
 
-    <template x-for="val in items" :key="val">
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-sm">
-        <span x-text="options[val]?.text || val"></span>
-        <button @click.stop="removeItem(val)" class="w-4 h-4 rounded-full text-blue-400 hover:text-blue-600">&times;</button>
-      </span>
-    </template>
+```html
+<div x-data="selectra({
+  mode: 'single',
+  placeholder: 'Choose...',
+  options: [
+    { value: 'alpha', text: 'Alpha', optgroup: 'greek' },
+    { value: 'beta', text: 'Beta', optgroup: 'greek' },
+    { value: 'a', text: 'A', optgroup: 'latin' },
+    { value: 'b', text: 'B', optgroup: 'latin' },
+  ],
+  optgroups: [
+    { value: 'greek', label: 'Greek Letters' },
+    { value: 'latin', label: 'Latin Letters' },
+  ]
+})" x-selectra x-cloak></div>
+```
 
-    <input x-ref="searchInput" x-model="query"
-           @input="onInput()" @focus="focus()" @blur.debounce.150ms="blur()"
-           @keydown="onKeyDown($event)" @paste="onPaste($event)"
-           :placeholder="items.length ? '' : placeholderText"
-           class="flex-1 min-w-[60px] bg-transparent outline-none border-none p-0 text-sm">
-  </div>
+#### Native `<select>` Enhancement
 
-  <div x-show="isOpen" x-ref="dropdown" x-transition
-       class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-    <div class="max-h-60 overflow-y-auto py-1">
-      <template x-for="(option, index) in filteredOptions" :key="optionKey(option)">
-        <div @click="selectOption(option)" @mouseenter="activeIndex = index"
-             :class="{ 'bg-blue-500 text-white': activeIndex === index }"
-             class="px-3 py-2 cursor-pointer" x-html="renderOption(option)">
-        </div>
-      </template>
-      <div x-show="canCreate" @click="createItem()"
-           class="px-3 py-2 cursor-pointer text-gray-500 border-t border-gray-100"
-           x-html="renderOptionCreate()">
-      </div>
-    </div>
-  </div>
+```html
+<div x-data="selectra()" x-selectra x-cloak>
+  <select>
+    <option value="">Select a fruit...</option>
+    <option value="apple">Apple</option>
+    <option value="banana">Banana</option>
+    <option value="cherry">Cherry</option>
+  </select>
 </div>
+```
+
+#### Remote Loading
+
+```html
+<div x-data="selectra({
+  mode: 'multi',
+  placeholder: 'Type to search...',
+  loadThrottle: 300,
+  load: (query, callback) => {
+    fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => callback(data.results))
+      .catch(() => callback([]));
+  }
+})" x-selectra x-cloak></div>
 ```
 
 ## Configuration
@@ -219,8 +201,9 @@ selectra({
 
 ### Remote Loading
 
-```js
-selectra({
+```html
+<div x-data="selectra({
+  placeholder: 'Type to search...',
   load: (query, callback) => {
     fetch(`/api/search?q=${encodeURIComponent(query)}`)
       .then(res => res.json())
@@ -228,7 +211,7 @@ selectra({
       .catch(() => callback([]));
   },
   loadThrottle: 300,
-})
+})" x-selectra x-cloak></div>
 ```
 
 ## API Methods
