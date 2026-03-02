@@ -819,6 +819,7 @@ export function createSelectizeComponent(userConfig = {}) {
     },
 
     renderItem(option) {
+      if (!option) return '';
       const config = this._config;
       const label = option[config.labelField] || '';
 
@@ -896,6 +897,25 @@ export function createSelectizeComponent(userConfig = {}) {
       }
 
       return result;
+    },
+
+    /**
+     * Get grouped options with precomputed offsets for template binding.
+     * Works for both grouped and flat option lists.
+     */
+    _getGroupedView() {
+      const groups = this.getGroupedOptions();
+      let offset = 0;
+      return groups.map((g, i) => {
+        const view = {
+          key: g.id || '__ungrouped_' + i,
+          label: g.label,
+          options: g.options,
+          offset,
+        };
+        offset += g.options.length;
+        return view;
+      });
     },
 
     get hasOptgroups() {
