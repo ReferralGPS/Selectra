@@ -7,9 +7,16 @@
   <style>
     [x-cloak] { display: none !important; }
   </style>
+
+  <!-- Tailwind -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Selectra CSS -->
+  <link rel="stylesheet" href="./selectra.css">
+
   <script type="module">
-    import Alpine from 'alpinejs';
-    import Selectra from '../src-alpine/index.js';
+    import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js"
+    import Selectra from "./selectra.es.js"
 
     // Demo data — exposed on window so x-data expressions can reference them
     window.countries = [
