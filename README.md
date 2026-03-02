@@ -41,15 +41,15 @@ Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/sele
 ## Installation
 
 ```bash
-npm install selectra alpinejs
+npm install @referralgps/selectra alpinejs
 ```
 
 ### CDN
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/selectra/dist/selectra.iife.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/selectra/dist/selectra.css">
+<script src="https://cdn.jsdelivr.net/npm/@referralgps/selectra/dist/selectra.iife.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@referralgps/selectra/dist/selectra.css">
 ```
 
 ---
@@ -60,8 +60,8 @@ npm install selectra alpinejs
 
 ```js
 import Alpine from 'alpinejs';
-import Selectra from 'selectra';
-import 'selectra/css';
+import Selectra from '@referralgps/selectra';
+import '@referralgps/selectra/css';
 
 Alpine.plugin(Selectra);
 Alpine.start();
@@ -306,7 +306,7 @@ selectra({
 ### Custom Plugins
 
 ```js
-import { registerPlugin } from 'selectra';
+import { registerPlugin } from '@referralgps/selectra';
 
 registerPlugin('my_plugin', function(options) {
   // `this` is the selectra component instance
