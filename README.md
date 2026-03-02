@@ -1,5 +1,10 @@
 # Selectra
 
+[![npm version](https://img.shields.io/npm/v/@referralgps/selectra)](https://www.npmjs.com/package/@referralgps/selectra)
+[![npm downloads](https://img.shields.io/npm/dm/@referralgps/selectra)](https://www.npmjs.com/package/@referralgps/selectra)
+[![license](https://img.shields.io/npm/l/@referralgps/selectra)](https://github.com/ReferralGPS/Selectra/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ReferralGPS/Selectra)](https://github.com/ReferralGPS/Selectra)
+
 > A powerful, extensible `<select>` UI control — rebuilt with **Alpine.js** and **Tailwind CSS**.
 
 Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/selectize.js), designed for tagging, contact lists, country selectors, and autocomplete. It drops the jQuery dependency entirely in favor of Alpine.js reactivity and Tailwind CSS styling.
