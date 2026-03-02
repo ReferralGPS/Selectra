@@ -785,6 +785,9 @@ export function createSelectizeComponent(userConfig = {}) {
         // addItem() already called close(), so we must NOT refocus
         // (that would trigger openOnFocus and reopen the dropdown).
         this.isFocused = false;
+        // Clear the search cache so the user can re-search when they
+        // reopen the dropdown to change the selection.
+        this.loadedSearches = {};
         if (this.$refs.searchInput) {
           this.$refs.searchInput.blur();
         }

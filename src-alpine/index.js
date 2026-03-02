@@ -62,7 +62,7 @@ const SELECTRA_TEMPLATE = `
            @keydown="onKeyDown($event)"
            @paste="onPaste($event)"
            :placeholder="placeholderText"
-           x-show="!isFull && (isMultiple || isFocused || !items.length)"
+           x-show="(isSingle || !isFull) && (isMultiple || isFocused || !items.length)"
            class="selectra-search">
     <span x-show="isFull && isMultiple" class="selectra-max-badge">Max reached</span>
     <div x-show="isLoading && !isOpen" class="selectra-spinner"></div>
