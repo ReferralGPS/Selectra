@@ -4,107 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Selectra — Alpine.js + Tailwind CSS</title>
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     [x-cloak] { display: none !important; }
-
-    /* ── Selectra Component Styles (plain CSS — no @apply) ── */
-    .selectra-control { position: relative; width: 100%; font-size: 0.875rem; line-height: 1.25rem; }
-    .selectra-control.is-disabled { opacity: 0.5; pointer-events: none; }
-
-    .selectra-input {
-      position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem;
-      width: 100%; min-height: 38px; padding: 0.375rem 0.75rem;
-      background: #fff; border: 1px solid #d1d5db; border-radius: 0.5rem;
-      cursor: text; transition: all 150ms; color: #111827;
-      box-sizing: border-box;
-    }
-    .selectra-input:hover { border-color: #9ca3af; }
-    .selectra-input.is-focused { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
-    .selectra-input.is-invalid { border-color: #ef4444; box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
-    .selectra-input.is-locked { background: #f9fafb; cursor: default; }
-    .selectra-input.is-single { cursor: pointer; padding-right: 2rem; }
-    .selectra-input.is-single.has-items .selectra-search { position: absolute; inset: 0; padding: 0.375rem 0.75rem; }
-
-    .selectra-search {
-      flex: 1; min-width: 60px; background: transparent;
-      outline: none; border: none; padding: 0; margin: 0;
-      color: #111827; font-size: inherit; font-family: inherit;
-    }
-    .selectra-search::placeholder { color: #9ca3af; }
-    .selectra-search:focus { outline: none; box-shadow: none; }
-    .selectra-input.is-single .selectra-search { min-width: 0; width: 100%; }
-
-    .selectra-item {
-      display: inline-flex; align-items: center; gap: 0.25rem;
-      padding: 0.125rem 0.5rem; border-radius: 0.375rem;
-      background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
-      font-size: 0.875rem; line-height: 1.375;
-      animation: fade-in 0.15s ease-out;
-    }
-    .selectra-item-remove {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 1rem; height: 1rem; border-radius: 9999px;
-      color: #60a5fa; cursor: pointer; transition: all 100ms;
-      margin-left: 0.125rem; margin-right: -0.125rem;
-      background: none; border: none; font-size: 1rem; line-height: 1; padding: 0;
-    }
-    .selectra-item-remove:hover { color: #2563eb; background: #dbeafe; }
-
-    .selectra-single-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111827; }
-
-    .selectra-arrow {
-      position: absolute; right: 0.625rem; top: 50%; transform: translateY(-50%);
-      width: 1rem; height: 1rem; color: #9ca3af;
-      pointer-events: none; transition: transform 200ms;
-    }
-    .selectra-arrow.is-open { transform: translateY(-50%) rotate(180deg); }
-
-    .selectra-dropdown {
-      position: absolute; z-index: 50; width: 100%; margin-top: 0.25rem;
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 0.5rem;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-      overflow: hidden; animation: dropdown-in 0.15s ease-out;
-    }
-    .selectra-dropdown-content { max-height: 15rem; overflow-y: auto; padding: 0.25rem 0; }
-
-    .selectra-option {
-      padding: 0.5rem 0.75rem; cursor: pointer; color: #374151;
-      transition: background-color 75ms, color 75ms; line-height: 1.375;
-    }
-    .selectra-option.is-active { background: #3b82f6; color: #fff; }
-    .selectra-option.is-active .highlight { color: #fff; }
-
-    .selectra-option-create {
-      padding: 0.5rem 0.75rem; cursor: pointer; color: #6b7280;
-      transition: background-color 75ms, color 75ms; border-top: 1px solid #f3f4f6;
-    }
-    .selectra-option-create.is-active { background: #3b82f6; color: #fff; }
-
-    .selectra-optgroup-header {
-      padding: 0.375rem 0.75rem; font-size: 0.75rem; font-weight: 600;
-      color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;
-      background: #f9fafb; border-bottom: 1px solid #f3f4f6;
-    }
-
-    .selectra-no-results { padding: 0.75rem; text-align: center; color: #9ca3af; font-size: 0.875rem; }
-    .selectra-loading { padding: 0.75rem; text-align: center; color: #9ca3af; font-size: 0.875rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .selectra-spinner { width: 1rem; height: 1rem; border: 2px solid #d1d5db; border-top-color: #3b82f6; border-radius: 9999px; animation: spin 0.6s linear infinite; }
-    .selectra-max-badge { font-size: 0.75rem; color: #9ca3af; margin-left: 0.25rem; }
-
-    .highlight { font-weight: 600; color: inherit; }
-
-    /* Scrollbar */
-    .selectra-dropdown-content::-webkit-scrollbar { width: 6px; }
-    .selectra-dropdown-content::-webkit-scrollbar-track { background: transparent; }
-    .selectra-dropdown-content::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 9999px; }
-    .selectra-dropdown-content::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
-
-    @keyframes fade-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes dropdown-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+  <script type="module">
+    import Alpine from 'alpinejs';
+    import Selectra from '../src-alpine/index.js';
+
+    // Demo data — exposed on window so x-data expressions can reference them
+    window.countries = [
+      { value: 'us', text: 'United States' }, { value: 'ca', text: 'Canada' },
+      { value: 'mx', text: 'Mexico' }, { value: 'gb', text: 'United Kingdom' },
+      { value: 'fr', text: 'France' }, { value: 'de', text: 'Germany' },
+      { value: 'it', text: 'Italy' }, { value: 'es', text: 'Spain' },
+      { value: 'pt', text: 'Portugal' }, { value: 'nl', text: 'Netherlands' },
+      { value: 'be', text: 'Belgium' }, { value: 'ch', text: 'Switzerland' },
+      { value: 'at', text: 'Austria' }, { value: 'au', text: 'Australia' },
+      { value: 'nz', text: 'New Zealand' }, { value: 'jp', text: 'Japan' },
+      { value: 'kr', text: 'South Korea' }, { value: 'cn', text: 'China' },
+      { value: 'in', text: 'India' }, { value: 'br', text: 'Brazil' },
+      { value: 'ar', text: 'Argentina' }, { value: 'za', text: 'South Africa' },
+      { value: 'ng', text: 'Nigeria' }, { value: 'eg', text: 'Egypt' },
+      { value: 'se', text: 'Sweden' }, { value: 'no', text: 'Norway' },
+      { value: 'dk', text: 'Denmark' }, { value: 'fi', text: 'Finland' },
+      { value: 'pl', text: 'Poland' }, { value: 'ie', text: 'Ireland' },
+    ];
+
+    window.programmingLanguages = [
+      { value: 'js', text: 'JavaScript' }, { value: 'ts', text: 'TypeScript' },
+      { value: 'py', text: 'Python' }, { value: 'rb', text: 'Ruby' },
+      { value: 'go', text: 'Go' }, { value: 'rs', text: 'Rust' },
+      { value: 'java', text: 'Java' }, { value: 'cs', text: 'C#' },
+      { value: 'cpp', text: 'C++' }, { value: 'swift', text: 'Swift' },
+      { value: 'kt', text: 'Kotlin' }, { value: 'php', text: 'PHP' },
+      { value: 'elixir', text: 'Elixir' }, { value: 'zig', text: 'Zig' },
+      { value: 'lua', text: 'Lua' },
+    ];
+
+    window.groupedOptions = [
+      { value: 'alpha', text: 'Alpha', optgroup: 'greek' },
+      { value: 'beta', text: 'Beta', optgroup: 'greek' },
+      { value: 'gamma', text: 'Gamma', optgroup: 'greek' },
+      { value: 'delta', text: 'Delta', optgroup: 'greek' },
+      { value: 'a', text: 'A', optgroup: 'latin' },
+      { value: 'b', text: 'B', optgroup: 'latin' },
+      { value: 'c', text: 'C', optgroup: 'latin' },
+      { value: 'd', text: 'D', optgroup: 'latin' },
+      { value: '1', text: 'One', optgroup: 'numbers' },
+      { value: '2', text: 'Two', optgroup: 'numbers' },
+      { value: '3', text: 'Three', optgroup: 'numbers' },
+      { value: '4', text: 'Four', optgroup: 'numbers' },
+    ];
+
+    // A helper for the remote-loading demo
+    window.simulateRemoteLoad = (query, callback) => {
+      setTimeout(() => {
+        const all = [
+          ...countries.map(c => ({ ...c, text: c.text + ' (country)' })),
+          ...programmingLanguages.map(l => ({ ...l, value: 'lang-' + l.value, text: l.text + ' (language)' })),
+        ];
+        callback(all.filter(i => i.text.toLowerCase().includes(query.toLowerCase())));
+      }, 500);
+    };
+
+    Alpine.plugin(Selectra);
+    Alpine.start();
+  </script>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <div class="max-w-4xl mx-auto px-6 py-12">
@@ -177,7 +142,7 @@
            x-selectra x-cloak></div>
     </section>
 
-    <!-- ── Demo 5: Remote Loading ─────────────────────── -->
+    <!-- ── Demo 5: Remote Loading (multi) ─────────────────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading</h2>
       <p class="text-sm text-gray-500 mb-4">Search loads results from a simulated API. Try typing "a", "b", or "c".</p>
@@ -186,13 +151,21 @@
              mode: 'multi',
              placeholder: 'Type to search...',
              loadThrottle: 300,
-             load: (query, callback) => {
-               setTimeout(() => {
-                 const all = [...countries.map(c => ({...c, text: c.text + ' (country)'})),
-                              ...programmingLanguages.map(l => ({...l, value: 'lang-' + l.value, text: l.text + ' (language)'}))];
-                 callback(all.filter(i => i.text.toLowerCase().includes(query.toLowerCase())));
-               }, 500);
-             }
+             load: simulateRemoteLoad,
+           })"
+           x-selectra x-cloak></div>
+    </section>
+
+    <!-- ── Demo 5.1: Remote Loading (single) ─────────────────────── -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading</h2>
+      <p class="text-sm text-gray-500 mb-4">Search loads results from a simulated API. Try typing "a", "b", or "c".</p>
+      <div class="max-w-md"
+           x-data="selectra({
+             mode: 'single',
+             placeholder: 'Type to search...',
+             loadThrottle: 300,
+             load: simulateRemoteLoad,
            })"
            x-selectra x-cloak></div>
     </section>
@@ -230,415 +203,5 @@
       <p>Selectra — rebuilt with Alpine.js &amp; Tailwind CSS</p>
     </footer>
   </div>
-
-  <!-- ── Component Logic (inline for demo — in production, use the npm package) ── -->
-  <script>
-    // ── Sifter (minimal inline version for demo) ──────
-    class Sifter {
-      constructor(items, settings = {}) {
-        this.items = items;
-        this.settings = { diacritics: true, ...settings };
-      }
-      tokenize(query) {
-        query = String(query || '').toLowerCase().trim();
-        if (!query.length) return [];
-        return query.split(/\s+/).map(word => ({
-          string: word,
-          regex: new RegExp(word.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'), 'i')
-        }));
-      }
-      search(query, options = {}) {
-        const q = String(query || '').toLowerCase().trim();
-        const fields = options.fields || ['text'];
-        const search = { query: q, tokens: this.tokenize(q), total: 0, items: [] };
-        const keys = Array.isArray(this.items) ? this.items.map((_, i) => i) : Object.keys(this.items);
-        for (const key of keys) {
-          const item = this.items[key];
-          if (!q.length) { search.items.push({ score: 1, id: key }); continue; }
-          let score = 0;
-          for (const token of search.tokens) {
-            let s = 0;
-            for (const field of fields) {
-              const v = String(item[field] || '').toLowerCase();
-              const pos = v.search(token.regex);
-              if (pos !== -1) { let x = token.string.length / v.length; if (pos === 0) x += 0.5; s += x; }
-            }
-            score += s / fields.length;
-          }
-          if (options.conjunction === 'and' && score <= 0) continue;
-          if (score > 0 || !q.length) search.items.push({ score, id: key });
-        }
-        search.items.sort((a, b) => b.score - a.score);
-        search.total = search.items.length;
-        if (typeof options.limit === 'number') search.items = search.items.slice(0, options.limit);
-        return search;
-      }
-    }
-
-    // ── Helpers ───────────────────────────────────────────
-    function escapeHtml(s) { return typeof s !== 'string' ? '' : s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function hashKey(v) { return v == null ? null : String(v); }
-    function highlight(text, query) {
-      if (!query) return escapeHtml(text);
-      const e = escapeHtml(text);
-      return e.replace(new RegExp('(' + query.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + ')', 'ig'),
-        '<span class="font-semibold underline decoration-blue-300">$1</span>');
-    }
-
-    // ── Auto-render template ─────────────────────────────
-    const SELECTRA_TEMPLATE = `
-<div class="selectra-control" :class="{'is-disabled': isDisabled}">
-  <div @click="focus()" class="selectra-input"
-       :class="{'is-focused': isFocused, 'is-invalid': isInvalid, 'is-locked': isLocked, 'is-single': isSingle, 'has-items': items.length > 0}">
-    <span x-show="isSingle && items.length && !isFocused" x-text="currentValueText" class="selectra-single-value"></span>
-    <template x-for="val in items" :key="val">
-      <span x-show="isMultiple" class="selectra-item">
-        <span x-html="options[val] ? renderItem(options[val]) : val"></span>
-        <span @click.stop="removeItem(val)" class="selectra-item-remove">&times;</span>
-      </span>
-    </template>
-    <input x-ref="searchInput" x-model="query" @input="onInput()" @focus="focus()" @blur.debounce.150ms="blur()"
-           @keydown="onKeyDown($event)" @paste="onPaste($event)" :placeholder="placeholderText"
-           x-show="!isFull && (isMultiple || isFocused || !items.length)" class="selectra-search">
-    <span x-show="isFull && isMultiple" class="selectra-max-badge">Max reached</span>
-    <div x-show="isLoading && !isOpen" class="selectra-spinner"></div>
-    <svg x-show="isSingle" class="selectra-arrow" :class="{'is-open': isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-    </svg>
-  </div>
-  <div x-show="isOpen" x-ref="dropdown" x-cloak class="selectra-dropdown"
-       x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1"
-       x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-100"
-       x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1">
-    <div class="selectra-dropdown-content">
-      <template x-for="group in _getGroupedView()" :key="group.key">
-        <div>
-          <div x-show="group.label" x-text="group.label" class="selectra-optgroup-header"></div>
-          <template x-for="(option, idx) in group.options" :key="optionKey(option)">
-            <div @click="selectOption(option)" @mouseenter="activeIndex = group.offset + idx"
-                 :data-active="activeIndex === group.offset + idx"
-                 :class="{'is-active': activeIndex === group.offset + idx}"
-                 class="selectra-option" x-html="renderOption(option)"></div>
-          </template>
-        </div>
-      </template>
-      <div x-show="canCreate" @click="createItem()" @mouseenter="activeIndex = filteredOptions.length"
-           :data-active="activeIndex === filteredOptions.length" :class="{'is-active': activeIndex === filteredOptions.length}"
-           class="selectra-option-create" x-html="renderOptionCreate()"></div>
-      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate" class="selectra-no-results" x-html="renderNoResults()"></div>
-      <div x-show="isLoading" class="selectra-loading"><div class="selectra-spinner"></div><span x-html="renderLoading()"></span></div>
-    </div>
-  </div>
-</div>`.trim();
-
-    // ── Core component factory ────────────────────────────
-    function createSelectra(userConfig = {}) {
-      const config = {
-        delimiter: ',', create: false, highlight: true, openOnFocus: true,
-        maxOptions: 1000, maxItems: null, hideSelected: null, selectOnTab: true,
-        closeAfterSelect: false, placeholder: '', mode: null, search: true,
-        valueField: 'value', labelField: 'text', disabledField: 'disabled',
-        optgroupField: 'optgroup', optgroupLabelField: 'label',
-        searchField: ['text'], searchConjunction: 'and', createFilter: null,
-        createOnBlur: false, setFirstOptionActive: false, splitOn: null,
-        normalize: true, sortField: '$order', load: null, loadThrottle: 300,
-        preload: false, render: {}, plugins: [], options: [], optgroups: [],
-        items: [], ...userConfig,
-      };
-
-      if (!config.mode) config.mode = config.maxItems === 1 ? 'single' : 'multi';
-      if (config.mode === 'single') config.maxItems = 1;
-      if (config.hideSelected === null) config.hideSelected = config.mode === 'multi';
-
-      const optionsHash = {};
-      let orderCounter = 0;
-      for (const opt of config.options) {
-        const key = hashKey(opt[config.valueField]);
-        if (key !== null) { opt.$order = ++orderCounter; optionsHash[key] = opt; }
-      }
-
-      const optgroupsHash = {};
-      for (const og of config.optgroups) {
-        optgroupsHash[og.value || og.label] = og;
-      }
-
-      const sifter = new Sifter(optionsHash, { diacritics: true });
-      let debouncedLoad = null;
-      if (config.load && config.loadThrottle) {
-        let timer;
-        debouncedLoad = (q, fn) => { clearTimeout(timer); timer = setTimeout(() => fn(q), config.loadThrottle); };
-      }
-
-      return {
-        isOpen: false, isFocused: false, isDisabled: false, isLocked: false,
-        isLoading: false, isInvalid: false, query: '', activeIndex: -1, caretPos: 0,
-        items: [...config.items], options: optionsHash, optgroups: optgroupsHash,
-        optionOrder: Object.keys(optionsHash), loadedSearches: {},
-        _config: config, _sifter: sifter, _orderCounter: orderCounter, _onClickOutside: null,
-
-        get isMultiple() { return this._config.mode === 'multi'; },
-        get isSingle() { return this._config.mode === 'single'; },
-        get isFull() { return this._config.maxItems !== null && this.items.length >= this._config.maxItems; },
-        get canCreate() {
-          if (!this._config.create || !this.query.trim() || this.isFull) return false;
-          if (this._config.createFilter) {
-            const f = this._config.createFilter;
-            if (typeof f === 'function') return f(this.query);
-            if (f instanceof RegExp) return f.test(this.query);
-          }
-          return !Object.values(this.options).find(o => (o[this._config.labelField] || '').toLowerCase() === this.query.toLowerCase());
-        },
-        get filteredOptions() {
-          this._sifter.items = this.options;
-          const results = this._sifter.search(this.query, { fields: this._config.searchField, conjunction: this._config.searchConjunction, limit: this._config.maxOptions });
-          let filtered = results.items.map(r => this.options[r.id]).filter(Boolean);
-          if (this._config.hideSelected) filtered = filtered.filter(o => !this.items.includes(hashKey(o[this._config.valueField])));
-          return filtered.filter(o => !o[this._config.disabledField]);
-        },
-        get placeholderText() { return (this.items.length > 0 && this.isSingle) ? '' : (this._config.placeholder || ''); },
-        get currentValueText() {
-          if (!this.isSingle || !this.items.length) return '';
-          const opt = this.options[this.items[0]];
-          return opt ? opt[this._config.labelField] : '';
-        },
-
-        // ── Grouped view for template ──────────────────
-        getGroupedOptions() {
-          const opts = this.filteredOptions, c = this._config;
-          const groups = {}, ungrouped = [];
-          for (const opt of opts) {
-            const gid = opt[c.optgroupField];
-            if (gid && this.optgroups[gid]) { (groups[gid] = groups[gid] || []).push(opt); }
-            else { ungrouped.push(opt); }
-          }
-          const result = [];
-          for (const [id, items] of Object.entries(groups)) {
-            result.push({ id, label: this.optgroups[id]?.[c.optgroupLabelField] || id, options: items });
-          }
-          if (ungrouped.length) result.push({ id: null, label: null, options: ungrouped });
-          return result;
-        },
-        _getGroupedView() {
-          const groups = this.getGroupedOptions();
-          let offset = 0;
-          return groups.map((g, i) => {
-            const view = { key: g.id || '__ungrouped_' + i, label: g.label, options: g.options, offset };
-            offset += g.options.length;
-            return view;
-          });
-        },
-
-        // ── Lifecycle ──────────────────────────────────
-        init() {
-          this._onClickOutside = (e) => { if (!this.$el.contains(e.target)) { this.close(); this.blur(); } };
-          document.addEventListener('mousedown', this._onClickOutside);
-
-          // Read from native <select> if present
-          const sel = this.$el.querySelector('select');
-          if (sel) {
-            for (const opt of sel.options) {
-              if (!opt.value && !this._config.allowEmptyOption) continue;
-              const data = { [this._config.valueField]: opt.value, [this._config.labelField]: opt.textContent };
-              this.addOption(data, true);
-              if (opt.selected && opt.value) this.addItem(opt.value, true);
-            }
-            if (!this._config.placeholder && sel.options[0] && !sel.options[0].value) {
-              this._config.placeholder = sel.options[0].textContent;
-            }
-            sel.style.display = 'none';
-          }
-
-          if (this._config.preload === true) this.$nextTick(() => this._performLoad(''));
-        },
-        destroy() { if (this._onClickOutside) document.removeEventListener('mousedown', this._onClickOutside); },
-
-        // ── Option / Item Management ───────────────────
-        addOption(data, silent = false) {
-          if (Array.isArray(data)) { data.forEach(d => this.addOption(d, silent)); return; }
-          const key = hashKey(data[this._config.valueField]);
-          if (key === null || this.options[key]) return;
-          data.$order = ++this._orderCounter;
-          this.options[key] = data;
-          this.optionOrder.push(key);
-          this._sifter.items = this.options;
-        },
-        addItem(value, silent = false) {
-          const key = hashKey(value);
-          if (!key || !this.options[key] || this.items.includes(key) || this.isFull) return;
-          if (this.isSingle && this.items.length) this.items = [];
-          this.items.push(key);
-          this.caretPos = this.items.length;
-          this.query = '';
-          if (this._config.closeAfterSelect || this.isSingle) this.close();
-          if (this.isFull) this.close();
-        },
-        removeItem(value) { const idx = this.items.indexOf(hashKey(value)); if (idx !== -1) this.items.splice(idx, 1); },
-        clear() { this.items = []; },
-        getValue() { return this.isSingle ? (this.items[0] || '') : [...this.items]; },
-        setValue(value) { this.items = []; (Array.isArray(value) ? value : [value]).forEach(v => { if (v != null && v !== '') this.addItem(v, true); }); },
-        createItem(input = null) {
-          const val = (input !== null ? input : this.query).trim();
-          if (!val || !this._config.create) return;
-          const c = this._config;
-          if (typeof c.create === 'function') {
-            const data = c.create(val, (r) => { if (r) { this.addOption(r); this.addItem(r[c.valueField]); } });
-            if (data && typeof data === 'object') { this.addOption(data); this.addItem(data[c.valueField]); }
-          } else {
-            this.addOption({ [c.valueField]: val, [c.labelField]: val }); this.addItem(val);
-          }
-          this.query = '';
-        },
-        selectOption(option) {
-          if (!option || option[this._config.disabledField]) return;
-          this.addItem(option[this._config.valueField]);
-          this.query = '';
-          if (this.$refs.searchInput) this.$refs.searchInput.focus();
-        },
-
-        // ── Open / Close / Focus ───────────────────────
-        open() { if (this.isOpen || this.isDisabled || this.isLocked) return; this.isOpen = true; this.activeIndex = this._config.setFirstOptionActive ? 0 : -1; this.$nextTick(() => this._scrollToActive()); },
-        close() { if (!this.isOpen) return; this.isOpen = false; this.activeIndex = -1; },
-        focus() {
-          if (this.isDisabled) return; this.isFocused = true;
-          if (this.$refs.searchInput) this.$nextTick(() => this.$refs.searchInput.focus());
-          if (this._config.openOnFocus) this.open();
-          if (this._config.preload === 'focus' && !this.loadedSearches['']) this._performLoad('');
-        },
-        blur() {
-          if (!this.isFocused) return; this.isFocused = false;
-          if (this._config.createOnBlur && this.query.trim() && this.canCreate) this.createItem();
-          this.close();
-        },
-
-        // ── Keyboard ───────────────────────────────────
-        onKeyDown(e) {
-          if (this.isDisabled || this.isLocked) return;
-          const opts = this.filteredOptions, total = opts.length + (this.canCreate ? 1 : 0);
-          switch (e.key) {
-            case 'ArrowDown': e.preventDefault(); !this.isOpen ? this.open() : (this.activeIndex = Math.min(this.activeIndex + 1, total - 1), this._scrollToActive()); break;
-            case 'ArrowUp': e.preventDefault(); if (this.isOpen) { this.activeIndex = Math.max(this.activeIndex - 1, 0); this._scrollToActive(); } break;
-            case 'Enter': e.preventDefault();
-              if (this.isOpen && this.activeIndex >= 0) { this.activeIndex < opts.length ? this.selectOption(opts[this.activeIndex]) : this.createItem(); }
-              else if (!this.isOpen) this.open(); break;
-            case 'Escape': e.preventDefault(); this.close(); break;
-            case 'Tab':
-              if (this.isOpen && this._config.selectOnTab && this.activeIndex >= 0) {
-                e.preventDefault(); this.activeIndex < opts.length ? this.selectOption(opts[this.activeIndex]) : this.createItem();
-              } break;
-            case 'Backspace': case 'Delete':
-              if (!this.query && this.items.length && this.isMultiple) { e.preventDefault(); this.removeItem(this.items[this.items.length - 1]); } break;
-          }
-        },
-        onInput() { if (!this.isOpen) this.open(); this.activeIndex = this.query ? 0 : -1;
-          if (this._config.load && this.query && !this.loadedSearches[this.query]) {
-            if (debouncedLoad) debouncedLoad(this.query, (q) => this._performLoad(q)); else this._performLoad(this.query);
-          }
-        },
-        onPaste(e) {
-          if (!this.isMultiple) return;
-          const paste = (e.clipboardData || window.clipboardData).getData('text'); if (!paste) return;
-          const splitOn = this._config.splitOn || this._config.delimiter; if (!splitOn) return;
-          e.preventDefault();
-          const regex = splitOn instanceof RegExp ? splitOn : new RegExp('[' + splitOn.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + ']');
-          for (const part of paste.split(regex).map(s => s.trim()).filter(Boolean)) {
-            const match = Object.values(this.options).find(o => (o[this._config.labelField]||'').toLowerCase() === part.toLowerCase() || (o[this._config.valueField]||'').toLowerCase() === part.toLowerCase());
-            if (match) this.addItem(match[this._config.valueField]); else if (this._config.create) this.createItem(part);
-          }
-        },
-
-        // ── Remote Loading ─────────────────────────────
-        _performLoad(query) {
-          if (!this._config.load || this.loadedSearches[query]) return;
-          this.isLoading = true; this.loadedSearches[query] = true;
-          this._config.load(query, (results) => { this.isLoading = false; if (Array.isArray(results)) results.forEach(item => this.addOption(item, true)); });
-        },
-
-        // ── Rendering ──────────────────────────────────
-        renderOption(option) {
-          if (this._config.render?.option) return this._config.render.option(option, escapeHtml);
-          const label = option[this._config.labelField] || '';
-          return (this._config.highlight && this.query) ? highlight(label, this.query) : escapeHtml(label);
-        },
-        renderItem(option) {
-          if (!option) return '';
-          if (this._config.render?.item) return this._config.render.item(option, escapeHtml);
-          return escapeHtml(option[this._config.labelField] || '');
-        },
-        renderOptionCreate() {
-          if (this._config.render?.optionCreate) return this._config.render.optionCreate({ input: this.query }, escapeHtml);
-          return `Add <span class="font-medium">${escapeHtml(this.query)}</span>...`;
-        },
-        renderNoResults() {
-          if (this._config.render?.noResults) return this._config.render.noResults({ query: this.query }, escapeHtml);
-          return 'No results found';
-        },
-        renderLoading() {
-          if (this._config.render?.loading) return this._config.render.loading({ query: this.query }, escapeHtml);
-          return 'Loading...';
-        },
-        optionKey(option) { return hashKey(option[this._config.valueField]); },
-        _scrollToActive() { this.$nextTick(() => { const d = this.$refs.dropdown; if (!d) return; const a = d.querySelector('[data-active="true"]'); if (a) a.scrollIntoView({ block: 'nearest' }); }); },
-        lock() { this.isLocked = true; this.close(); },
-        unlock() { this.isLocked = false; },
-        disable() { this.isDisabled = true; this.close(); },
-        enable() { this.isDisabled = false; },
-      };
-    }
-
-    // ── Demo Data ─────────────────────────────────────────
-    const countries = [
-      { value: 'us', text: 'United States' }, { value: 'ca', text: 'Canada' },
-      { value: 'mx', text: 'Mexico' }, { value: 'gb', text: 'United Kingdom' },
-      { value: 'fr', text: 'France' }, { value: 'de', text: 'Germany' },
-      { value: 'it', text: 'Italy' }, { value: 'es', text: 'Spain' },
-      { value: 'pt', text: 'Portugal' }, { value: 'nl', text: 'Netherlands' },
-      { value: 'be', text: 'Belgium' }, { value: 'ch', text: 'Switzerland' },
-      { value: 'at', text: 'Austria' }, { value: 'au', text: 'Australia' },
-      { value: 'nz', text: 'New Zealand' }, { value: 'jp', text: 'Japan' },
-      { value: 'kr', text: 'South Korea' }, { value: 'cn', text: 'China' },
-      { value: 'in', text: 'India' }, { value: 'br', text: 'Brazil' },
-      { value: 'ar', text: 'Argentina' }, { value: 'za', text: 'South Africa' },
-      { value: 'ng', text: 'Nigeria' }, { value: 'eg', text: 'Egypt' },
-      { value: 'se', text: 'Sweden' }, { value: 'no', text: 'Norway' },
-      { value: 'dk', text: 'Denmark' }, { value: 'fi', text: 'Finland' },
-      { value: 'pl', text: 'Poland' }, { value: 'ie', text: 'Ireland' },
-    ];
-
-    const programmingLanguages = [
-      { value: 'js', text: 'JavaScript' }, { value: 'ts', text: 'TypeScript' },
-      { value: 'py', text: 'Python' }, { value: 'rb', text: 'Ruby' },
-      { value: 'go', text: 'Go' }, { value: 'rs', text: 'Rust' },
-      { value: 'java', text: 'Java' }, { value: 'cs', text: 'C#' },
-      { value: 'cpp', text: 'C++' }, { value: 'swift', text: 'Swift' },
-      { value: 'kt', text: 'Kotlin' }, { value: 'php', text: 'PHP' },
-      { value: 'elixir', text: 'Elixir' }, { value: 'zig', text: 'Zig' },
-      { value: 'lua', text: 'Lua' },
-    ];
-
-    const groupedOptions = [
-      { value: 'alpha', text: 'Alpha', optgroup: 'greek' },
-      { value: 'beta', text: 'Beta', optgroup: 'greek' },
-      { value: 'gamma', text: 'Gamma', optgroup: 'greek' },
-      { value: 'delta', text: 'Delta', optgroup: 'greek' },
-      { value: 'a', text: 'A', optgroup: 'latin' },
-      { value: 'b', text: 'B', optgroup: 'latin' },
-      { value: 'c', text: 'C', optgroup: 'latin' },
-      { value: 'd', text: 'D', optgroup: 'latin' },
-      { value: '1', text: 'One', optgroup: 'numbers' },
-      { value: '2', text: 'Two', optgroup: 'numbers' },
-      { value: '3', text: 'Three', optgroup: 'numbers' },
-      { value: '4', text: 'Four', optgroup: 'numbers' },
-    ];
-
-    // ── Register with Alpine ──────────────────────────────
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('selectra', (config = {}) => createSelectra(config));
-      Alpine.directive('selectra', (el) => {
-        if (!el.querySelector('.selectra-control')) {
-          el.insertAdjacentHTML('beforeend', SELECTRA_TEMPLATE);
-        }
-      });
-    });
-  </script>
 </body>
 </html>
