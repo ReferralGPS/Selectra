@@ -11,11 +11,10 @@ export default defineConfig({
     },
     outDir: 'dist',
     rollupOptions: {
-      external: ['alpinejs'],
+      external: [],
       output: {
         exports: 'named',
         globals: {
-          alpinejs: 'Alpine',
         },
         assetFileNames: 'selectra.[ext]',
       },
