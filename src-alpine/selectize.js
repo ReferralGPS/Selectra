@@ -397,12 +397,14 @@ export function createSelectizeComponent(userConfig = {}) {
       const key = hashKey(value);
       if (!key || !this.options[key]) return;
       if (this.items.includes(key)) return;
-      if (this.isFull) return;
 
-      // For single select, replace current
+      // For single select, replace the current item instead of blocking
       if (this.isSingle && this.items.length) {
         this.removeItem(this.items[0], true);
       }
+
+      // For multi select, respect the maxItems limit
+      if (this.isFull) return;
 
       this.items.push(key);
       this.caretPos = this.items.length;
@@ -777,9 +779,22 @@ export function createSelectizeComponent(userConfig = {}) {
       this.addItem(value);
       this.query = '';
 
-      if (this.$refs.searchInput) {
+      if (this.isSingle) {
+        // In single mode, blur so isFocused becomes false and the
+        // selected value text is displayed instead of the search input.
+        // addItem() already called close(), so we must NOT refocus
+        // (that would trigger openOnFocus and reopen the dropdown).
+        this.isFocused = false;
+        // Clear the search cache so the user can re-search when they
+        // reopen the dropdown to change the selection.
+        this.loadedSearches = {};
+        if (this.$refs.searchInput) {
+          this.$refs.searchInput.blur();
+        }
+      } else if (this.$refs.searchInput) {
+        // In multi mode, keep focus so the user can continue selecting.
         this.$refs.searchInput.focus();
-        if (this.isMultiple) autoGrow(this.$refs.searchInput);
+        autoGrow(this.$refs.searchInput);
       }
     },
 
@@ -819,6 +834,7 @@ export function createSelectizeComponent(userConfig = {}) {
     },
 
     renderItem(option) {
+      if (!option) return '';
       const config = this._config;
       const label = option[config.labelField] || '';
 
@@ -896,6 +912,25 @@ export function createSelectizeComponent(userConfig = {}) {
       }
 
       return result;
+    },
+
+    /**
+     * Get grouped options with precomputed offsets for template binding.
+     * Works for both grouped and flat option lists.
+     */
+    _getGroupedView() {
+      const groups = this.getGroupedOptions();
+      let offset = 0;
+      return groups.map((g, i) => {
+        const view = {
+          key: g.id || '__ungrouped_' + i,
+          label: g.label,
+          options: g.options,
+          offset,
+        };
+        offset += g.options.length;
+        return view;
+      });
     },
 
     get hasOptgroups() {

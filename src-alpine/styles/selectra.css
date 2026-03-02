@@ -220,6 +220,11 @@
            text-xs font-medium;
   }
 
+  /* ── Max Items Badge ─────────────────────────────────── */
+  .selectra-max-badge {
+    @apply text-xs text-gray-400 ml-1 whitespace-nowrap;
+  }
+
   /* ── Highlight ───────────────────────────────────────── */
   .highlight {
     @apply font-semibold text-inherit;
