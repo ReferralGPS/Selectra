@@ -7,7 +7,7 @@
 
 > A powerful, extensible `<select>` UI control — rebuilt with **Alpine.js** and **Tailwind CSS**.
 
-[**Live Demo →**](https://referralgps.github.io/selectize.js/examples/)
+[**Live Demo →**](https://referralgps.github.io/Selectra/examples/index.html)
 
 Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/selectize.js), designed for tagging, contact lists, country selectors, and autocomplete. It drops the jQuery dependency entirely in favor of Alpine.js reactivity and Tailwind CSS styling.
 
