@@ -137,7 +137,7 @@ function SelectraPlugin(Alpine) {
   });
 }
 
-SelectraPlugin.version = '1.0.0';
+SelectraPlugin.version = __PKG_VERSION__;
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 
 // Named exports
