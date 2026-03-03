@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Selectra — Alpine.js + Tailwind CSS</title>
   <style>
-    [x-cloak] { display: none !important; }
+    [x-cloak] {
+      display: none !important;
+    }
   </style>
 
-  <!-- Tailwind -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
   <!-- Selectra CSS -->
-  <link rel="stylesheet" href="./selectra.css">
+  <link rel="stylesheet" href="../dist/selectra.css">
 
   <script type="module">
     import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js"
-    import Selectra from "./selectra.es.js"
+    import Selectra from "../dist/selectra.es.js"
 
     // Demo data — exposed on window so x-data expressions can reference them
     window.countries = [
@@ -78,6 +78,7 @@
     Alpine.start();
   </script>
 </head>
+
 <body class="bg-gray-50 min-h-screen">
   <div class="max-w-4xl mx-auto px-6 py-12">
 
@@ -86,7 +87,8 @@
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Selectra</h1>
       <p class="text-gray-500 text-lg">Alpine.js + Tailwind CSS — No jQuery required</p>
       <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-        <strong>Easy integration:</strong> Just add <code class="bg-blue-100 px-1 rounded">x-data="selectra({...})"</code>
+        <strong>Easy integration:</strong> Just add <code
+          class="bg-blue-100 px-1 rounded">x-data="selectra({...})"</code>
         and <code class="bg-blue-100 px-1 rounded">x-selectra</code> to any element. The template renders automatically.
       </div>
     </div>
@@ -96,8 +98,8 @@
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Single Select</h2>
       <p class="text-sm text-gray-500 mb-4">Basic single-value selection with search.</p>
       <div class="max-w-md"
-           x-data="selectra({ mode: 'single', options: countries, placeholder: 'Select a country...', items: ['us'] })"
-           x-selectra x-cloak></div>
+        x-data="selectra({ mode: 'single', options: countries, placeholder: 'Select a country...', items: ['us'] })"
+        x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 2: Multi Select with Tags ─────────────── -->
@@ -105,16 +107,16 @@
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select (Tags)</h2>
       <p class="text-sm text-gray-500 mb-4">Select multiple values with removable tags.</p>
       <div class="max-w-md"
-           x-data="selectra({ mode: 'multi', options: programmingLanguages, placeholder: 'Select languages...', items: ['js', 'py'] })"
-           x-selectra x-cloak></div>
+        x-data="selectra({ mode: 'multi', options: programmingLanguages, placeholder: 'Select languages...', items: ['js', 'py'] })"
+        x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 3: Tagging (Create New) ───────────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Tagging</h2>
-      <p class="text-sm text-gray-500 mb-4">Type to create new tags on the fly. Supports paste with comma-separated values.</p>
-      <div class="max-w-md"
-           x-data="selectra({
+      <p class="text-sm text-gray-500 mb-4">Type to create new tags on the fly. Supports paste with comma-separated
+        values.</p>
+      <div class="max-w-md" x-data="selectra({
              mode: 'multi',
              create: true,
              createOnBlur: true,
@@ -127,16 +129,14 @@
                { value: 'documentation', text: 'documentation' },
                { value: 'help-wanted', text: 'help wanted' }
              ]
-           })"
-           x-selectra x-cloak></div>
+           })" x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 4: Optgroups ──────────────────────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Option Groups</h2>
       <p class="text-sm text-gray-500 mb-4">Grouped options with headers.</p>
-      <div class="max-w-md"
-           x-data="selectra({
+      <div class="max-w-md" x-data="selectra({
              mode: 'single',
              placeholder: 'Choose...',
              options: groupedOptions,
@@ -145,36 +145,31 @@
                { value: 'latin', label: 'Latin Letters' },
                { value: 'numbers', label: 'Numbers' }
              ]
-           })"
-           x-selectra x-cloak></div>
+           })" x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 5: Remote Loading (multi) ─────────────────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading</h2>
       <p class="text-sm text-gray-500 mb-4">Search loads results from a simulated API. Try typing "a", "b", or "c".</p>
-      <div class="max-w-md"
-           x-data="selectra({
+      <div class="max-w-md" x-data="selectra({
              mode: 'multi',
              placeholder: 'Type to search...',
              loadThrottle: 300,
              load: simulateRemoteLoad,
-           })"
-           x-selectra x-cloak></div>
+           })" x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 5.1: Remote Loading (single) ─────────────────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading (Single)</h2>
       <p class="text-sm text-gray-500 mb-4">Search loads results from a simulated API. Try typing "a", "b", or "c".</p>
-      <div class="max-w-md"
-           x-data="selectra({
+      <div class="max-w-md" x-data="selectra({
              mode: 'single',
              placeholder: 'Type to search...',
              loadThrottle: 300,
              load: simulateRemoteLoad,
-           })"
-           x-selectra x-cloak></div>
+           })" x-selectra x-cloak></div>
     </section>
 
     <!-- ── Demo 6: Max Items ──────────────────────────── -->
@@ -182,14 +177,15 @@
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Max Items Limit</h2>
       <p class="text-sm text-gray-500 mb-4">Limited to 3 items maximum.</p>
       <div class="max-w-md"
-           x-data="selectra({ mode: 'multi', maxItems: 3, options: countries, placeholder: 'Pick up to 3...' })"
-           x-selectra x-cloak></div>
+        x-data="selectra({ mode: 'multi', maxItems: 3, options: countries, placeholder: 'Pick up to 3...' })" x-selectra
+        x-cloak></div>
     </section>
 
     <!-- ── Demo 7: Native <select> Enhancement ────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Native &lt;select&gt; Enhancement</h2>
-      <p class="text-sm text-gray-500 mb-4">Enhance a standard <code>&lt;select&gt;</code> element — options are read automatically.</p>
+      <p class="text-sm text-gray-500 mb-4">Enhance a standard <code>&lt;select&gt;</code> element — options are read
+        automatically.</p>
       <div class="max-w-md" x-data="selectra()" x-selectra x-cloak>
         <select>
           <option value="">Select a fruit...</option>
@@ -211,4 +207,5 @@
     </footer>
   </div>
 </body>
+
 </html>
