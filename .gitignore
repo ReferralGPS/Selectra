@@ -3,6 +3,5 @@
 node_modules
 *.log
 .vscode
-dist
 coverage/
 _site/
