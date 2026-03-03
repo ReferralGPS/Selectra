@@ -25,7 +25,7 @@
     "./css": "./dist/selectra.css"
   },
   "description": "Selectra — A powerful, extensible <select> UI control for tagging, contact lists, country selectors, and autocomplete. Built with Alpine.js and Tailwind CSS.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Brian Reavis <brian@thirdroute.com>",
   "contributors": [
     "Ris Adams <selectize@risadams.com>"
