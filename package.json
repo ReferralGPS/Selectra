@@ -47,8 +47,7 @@
     "vitest": "^2.1.0"
   },
   "peerDependencies": {
-    "alpinejs": "^3.0.0",
-    "tailwindcss": "^2.0.0"
+    "alpinejs": "^3.0.0"
   },
   "scripts": {
     "dev": "vite",
