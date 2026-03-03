@@ -1,17 +1,10 @@
 {
   "name": "@referralgps/selectra",
   "keywords": [
-    "select",
-    "ui",
-    "form",
-    "input",
-    "control",
-    "autocomplete",
-    "tagging",
-    "tag",
-    "alpine",
-    "alpinejs",
-    "tailwindcss"
+    "selectize",
+    "tokenize",
+    "select2",
+    "selectize.js with Alpinejs + TailwindCSS"
   ],
   "type": "module",
   "main": "dist/selectra.umd.js",
@@ -26,9 +19,9 @@
   },
   "description": "Selectra — A powerful, extensible <select> UI control for tagging, contact lists, country selectors, and autocomplete. Built with Alpine.js and Tailwind CSS.",
   "version": "1.0.3",
-  "author": "Brian Reavis <brian@thirdroute.com>",
+  "author": "Brijesh Sajeev<mailtobrijesh2003@gmail.com>",
   "contributors": [
-    "Ris Adams <selectize@risadams.com>"
+    "Gajendra Jena <gaju.mca@gmail.com>"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -60,6 +53,7 @@
     "node": ">=18"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
