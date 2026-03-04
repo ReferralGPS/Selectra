@@ -1,4 +1,4 @@
-/*! Selectra v1.0.3 | Apache-2.0 License */
+/*! Selectra v1.0.4 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -1418,7 +1418,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.3";
+SelectraPlugin.version = "1.0.4";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,
