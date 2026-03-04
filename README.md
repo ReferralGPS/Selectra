@@ -151,6 +151,7 @@ Enhance a standard `<select>` element — options are read automatically:
 | `load` | `function \| null` | `null` | Remote data loader |
 | `loadThrottle` | `number` | `300` | Load debounce delay (ms) |
 | `plugins` | `Array` | `[]` | Plugins to activate |
+| `dropdownPlaceholder` | `string` | `''` | Pre-search placeholder
 
 ### Custom Rendering
 

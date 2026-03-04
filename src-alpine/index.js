@@ -102,9 +102,13 @@ const SELECTRA_TEMPLATE = `
            class="selectra-option-create"
            x-html="renderOptionCreate()">
       </div>
-      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate"
+      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate && query.length > 0"
            class="selectra-no-results"
            x-html="renderNoResults()">
+      </div>
+      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate && query.length === 0 && _config.dropdownPlaceholder"
+           class="selectra-no-results"
+           x-html="renderDropdownPlaceholder()">
       </div>
       <div x-show="isLoading" class="selectra-loading">
         <div class="selectra-spinner"></div>
