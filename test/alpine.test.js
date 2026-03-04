@@ -214,6 +214,77 @@ describe('Selectra Component', () => {
       expect(DEFAULTS.labelField).toBe('text');
       expect(DEFAULTS.searchField).toEqual(['text']);
     });
+
+    it('should have dropdownPlaceholder default as empty string', () => {
+      expect(DEFAULTS.dropdownPlaceholder).toBe('');
+    });
+
+    it('should have dropdownPlaceholder render default as null', () => {
+      expect(DEFAULTS.render.dropdownPlaceholder).toBeNull();
+    });
+  });
+
+  describe('renderNoResults', () => {
+    it('should return default "No results found" text', () => {
+      const factory = createSelectizeComponent({ mode: 'single' });
+      const component = factory();
+      expect(component.renderNoResults()).toBe('No results found');
+    });
+
+    it('should use custom render.noResults when provided', () => {
+      const factory = createSelectizeComponent({
+        mode: 'single',
+        render: {
+          noResults: (data, escape) => `Nothing for "${escape(data.query)}"`,
+        },
+      });
+      const component = factory();
+      // Simulate _config being set (normally done in init())
+      component._config = { ...DEFAULTS, ...component._config, render: { noResults: (data, escape) => `Nothing for "${escape(data.query)}"` } };
+      component.query = 'xyz';
+      expect(component.renderNoResults()).toBe('Nothing for "xyz"');
+    });
+  });
+
+  describe('renderDropdownPlaceholder', () => {
+    it('should return empty string when dropdownPlaceholder is not set', () => {
+      const factory = createSelectizeComponent({ mode: 'single' });
+      const component = factory();
+      // _config is populated in init(), manually set for unit test
+      component._config = { ...DEFAULTS };
+      expect(component.renderDropdownPlaceholder()).toBe('');
+    });
+
+    it('should return the configured dropdownPlaceholder text', () => {
+      const factory = createSelectizeComponent({
+        mode: 'single',
+        dropdownPlaceholder: 'Type to search...',
+      });
+      const component = factory();
+      component._config = { ...DEFAULTS, dropdownPlaceholder: 'Type to search...' };
+      expect(component.renderDropdownPlaceholder()).toBe('Type to search...');
+    });
+
+    it('should escape HTML in dropdownPlaceholder text', () => {
+      const factory = createSelectizeComponent({
+        mode: 'single',
+        dropdownPlaceholder: '<b>Search</b>',
+      });
+      const component = factory();
+      component._config = { ...DEFAULTS, dropdownPlaceholder: '<b>Search</b>' };
+      expect(component.renderDropdownPlaceholder()).toBe('&lt;b&gt;Search&lt;/b&gt;');
+    });
+
+    it('should use custom render.dropdownPlaceholder when provided', () => {
+      const customRender = (data, escape) => '<em>Start typing...</em>';
+      const factory = createSelectizeComponent({
+        mode: 'single',
+        render: { dropdownPlaceholder: customRender },
+      });
+      const component = factory();
+      component._config = { ...DEFAULTS, render: { ...DEFAULTS.render, dropdownPlaceholder: customRender } };
+      expect(component.renderDropdownPlaceholder()).toBe('<em>Start typing...</em>');
+    });
   });
 
   describe('registerPlugin', () => {

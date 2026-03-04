@@ -330,6 +330,7 @@ const DEFAULTS = {
   loadThrottle: 300,
   loadingClass: "loading",
   placeholder: "",
+  dropdownPlaceholder: "",
   mode: null,
   // 'single' | 'multi' — auto-detected
   search: true,
@@ -353,6 +354,7 @@ const DEFAULTS = {
     optionCreate: null,
     optgroupHeader: null,
     noResults: null,
+    dropdownPlaceholder: null,
     loading: null
   },
   // Callbacks
@@ -978,6 +980,14 @@ function createSelectizeComponent(userConfig = {}) {
       }
       return "No results found";
     },
+    renderDropdownPlaceholder() {
+      var _a;
+      const config = this._config;
+      if ((_a = config.render) == null ? void 0 : _a.dropdownPlaceholder) {
+        return config.render.dropdownPlaceholder({}, escapeHtml);
+      }
+      return escapeHtml(config.dropdownPlaceholder || "");
+    },
     renderLoading() {
       var _a;
       const config = this._config;
@@ -1381,9 +1391,13 @@ const SELECTRA_TEMPLATE = `
            class="selectra-option-create"
            x-html="renderOptionCreate()">
       </div>
-      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate"
+      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate && query.length > 0"
            class="selectra-no-results"
            x-html="renderNoResults()">
+      </div>
+      <div x-show="filteredOptions.length === 0 && !isLoading && !canCreate && query.length === 0 && _config.dropdownPlaceholder"
+           class="selectra-no-results"
+           x-html="renderDropdownPlaceholder()">
       </div>
       <div x-show="isLoading" class="selectra-loading">
         <div class="selectra-spinner"></div>

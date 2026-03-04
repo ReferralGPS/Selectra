@@ -26,6 +26,7 @@ export interface SelectraRender {
   optionCreate?: (data: { input: string }, escape: (str: string) => string) => string;
   optgroupHeader?: (data: SelectraOptgroup, escape: (str: string) => string) => string;
   noResults?: (data: { query: string }, escape: (str: string) => string) => string;
+  dropdownPlaceholder?: (data: {}, escape: (str: string) => string) => string;
   loading?: (data: { query: string }, escape: (str: string) => string) => string;
 }
 
@@ -47,6 +48,7 @@ export interface SelectraConfig {
   closeAfterSelect?: boolean;
   loadThrottle?: number | null;
   placeholder?: string;
+  dropdownPlaceholder?: string;
   mode?: 'single' | 'multi' | null;
   search?: boolean;
   showArrow?: boolean;
@@ -153,6 +155,7 @@ export interface SelectraInstance {
   renderItem(option: SelectraOption): string;
   renderOptionCreate(): string;
   renderNoResults(): string;
+  renderDropdownPlaceholder(): string;
 
   onKeyDown(e: KeyboardEvent): void;
   onInput(): void;

@@ -98,7 +98,7 @@
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Single Select</h2>
       <p class="text-sm text-gray-500 mb-4">Basic single-value selection with search.</p>
       <div class="max-w-md"
-        x-data="selectra({ mode: 'single', options: countries, placeholder: 'Select a country...', items: ['us'] })"
+        x-data="selectra({ mode: 'single', options: countries, placeholder: 'Select a country...' })"
         x-selectra x-cloak></div>
     </section>
 
@@ -157,6 +157,7 @@
              placeholder: 'Type to search...',
              loadThrottle: 300,
              load: simulateRemoteLoad,
+             dropdownPlaceholder: 'Type to search...'
            })" x-selectra x-cloak></div>
     </section>
 
@@ -169,6 +170,7 @@
              placeholder: 'Type to search...',
              loadThrottle: 300,
              load: simulateRemoteLoad,
+             dropdownPlaceholder: 'Type to search for single...'
            })" x-selectra x-cloak></div>
     </section>
 

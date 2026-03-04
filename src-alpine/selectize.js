@@ -40,6 +40,7 @@ const DEFAULTS = {
   loadThrottle: 300,
   loadingClass: 'loading',
   placeholder: '',
+  dropdownPlaceholder: '',
   mode: null, // 'single' | 'multi' — auto-detected
   search: true,
   showArrow: true,
@@ -63,6 +64,7 @@ const DEFAULTS = {
     optionCreate: null,
     optgroupHeader: null,
     noResults: null,
+    dropdownPlaceholder: null,
     loading: null,
   },
 
@@ -859,6 +861,14 @@ export function createSelectizeComponent(userConfig = {}) {
         return config.render.noResults({ query: this.query }, escapeHtml);
       }
       return 'No results found';
+    },
+
+    renderDropdownPlaceholder() {
+      const config = this._config;
+      if (config.render?.dropdownPlaceholder) {
+        return config.render.dropdownPlaceholder({}, escapeHtml);
+      }
+      return escapeHtml(config.dropdownPlaceholder || '');
     },
 
     renderLoading() {
