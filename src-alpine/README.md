@@ -34,6 +34,7 @@ Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/sele
 - **Accessible** — focus management, label association, keyboard-first
 - **RTL Support** — auto-detected from CSS `direction`
 - **Tailwind CSS** — fully styled with utilities, trivially customizable
+- **Selected Count Mode** — show a count badge instead of tags in multi-select, with checkmarks on selected options
 - **Lightweight** — ~25 KB gzipped JS, zero runtime dependencies beyond Alpine.js
 
 ---
@@ -121,6 +122,23 @@ The `x-selectra` directive automatically renders the full component template —
 })" x-selectra x-cloak></div>
 ```
 
+#### Multi Select with Count Badge
+
+Show the number of selected items as a badge instead of individual tags. Selected options display a ✓ checkmark in the dropdown and can be toggled on/off by clicking.
+
+```html
+<div x-data="selectra({
+  mode: 'multi',
+  showSelectedCount: true,
+  placeholder: 'Select countries...',
+  options: [
+    { value: 'us', text: 'United States' },
+    { value: 'ca', text: 'Canada' },
+    { value: 'mx', text: 'Mexico' },
+  ]
+})" x-selectra x-cloak></div>
+```
+
 #### Native `<select>` Enhancement
 
 ```html
@@ -173,6 +191,7 @@ The `x-selectra` directive automatically renders the full component template —
 | `selectOnTab` | `boolean` | `true` | Tab selects active option |
 | `closeAfterSelect` | `boolean` | `false` | Close dropdown after selection |
 | `hideSelected` | `boolean \| null` | auto | Hide selected from dropdown |
+| `showSelectedCount` | `boolean` | `false` | Show count badge instead of tags in multi-select |
 | `delimiter` | `string` | `','` | Value separator |
 | `splitOn` | `RegExp \| string` | `null` | Regex for splitting pasted values |
 | `diacritics` | `boolean` | `true` | International character support |
