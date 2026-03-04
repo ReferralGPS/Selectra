@@ -230,7 +230,7 @@
 
   /* ── Search with count (shrink to fit alongside badge) ─ */
   .selectra-search-with-count {
-    @apply flex-1 min-w-[40px];
+    @apply flex-1 min-w-[40px] font-medium text-gray-900 placeholder-gray-700 capitalize;
   }
 
   /* ── Option with tick mark ───────────────────────────── */
