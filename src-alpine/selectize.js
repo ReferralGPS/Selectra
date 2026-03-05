@@ -179,8 +179,7 @@ export function createSelectizeComponent(userConfig = {}) {
 
     get selectedCountText() {
       const count = this.items.length;
-      if (count === 0) return '';
-      return count === 1 ? 1: count;
+      return count;
     },
 
     get currentValueText() {

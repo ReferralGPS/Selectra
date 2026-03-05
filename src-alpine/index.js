@@ -45,7 +45,7 @@ const SELECTRA_TEMPLATE = `
 <div class="selectra-control" :class="{'is-disabled': isDisabled}">
   <div @click="focus()" class="selectra-input"
        :class="{'is-focused': isFocused, 'is-invalid': isInvalid, 'is-locked': isLocked, 'is-single': isSingle, 'has-items': items.length > 0}">
-    <span x-show="_config.showSelectedCount && isMultiple && items.length > 0"
+    <span x-show="_config.showSelectedCount && isMultiple"
           class="selectra-selected-count">
       <span x-text="selectedCountText"></span>
     </span>

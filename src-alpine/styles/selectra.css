@@ -223,14 +223,22 @@
   .selectra-selected-count {
     @apply inline-flex items-center justify-center
            px-2 py-0.5 rounded-md
-           bg-blue-100 text-blue-700
+           bg-gray-100 text-gray-400
            text-xs font-bold whitespace-nowrap
            flex-shrink-0;
   }
 
+  .selectra-input.has-items .selectra-selected-count {
+    @apply bg-blue-100 text-blue-700;
+  }
+
   /* ── Search with count (shrink to fit alongside badge) ─ */
   .selectra-search-with-count {
-    @apply flex-1 min-w-[40px] font-medium text-gray-900 placeholder-gray-700 capitalize;
+    @apply flex-1 min-w-[40px] font-medium text-gray-900 placeholder-gray-400 capitalize;
+  }
+
+  .selectra-input.has-items .selectra-search-with-count {
+    @apply placeholder-blue-500;
   }
 
   /* ── Option with tick mark ───────────────────────────── */
