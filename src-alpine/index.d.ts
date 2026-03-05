@@ -52,6 +52,7 @@ export interface SelectraConfig {
   mode?: 'single' | 'multi' | null;
   search?: boolean;
   showArrow?: boolean;
+  showSelectedCount?: boolean;
   normalize?: boolean;
 
   valueField?: string;
@@ -114,6 +115,7 @@ export interface SelectraInstance {
   readonly selectedItems: SelectraOption[];
   readonly filteredOptions: SelectraOption[];
   readonly placeholderText: string;
+  readonly selectedCountText: string;
   readonly currentValueText: string;
 
   // Methods

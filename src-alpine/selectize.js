@@ -44,6 +44,7 @@ const DEFAULTS = {
   mode: null, // 'single' | 'multi' — auto-detected
   search: true,
   showArrow: true,
+  showSelectedCount: false,
   valueField: 'value',
   labelField: 'text',
   disabledField: 'disabled',
@@ -176,6 +177,11 @@ export function createSelectizeComponent(userConfig = {}) {
       return this._config.placeholder || '';
     },
 
+    get selectedCountText() {
+      const count = this.items.length;
+      return count;
+    },
+
     get currentValueText() {
       if (!this.isSingle || !this.items.length) return '';
       const opt = this.options[hashKey(this.items[0])];
@@ -255,7 +261,12 @@ export function createSelectizeComponent(userConfig = {}) {
 
       // Default hideSelected
       if (this._config.hideSelected === null) {
-        this._config.hideSelected = this._config.mode === 'multi';
+        this._config.hideSelected = this._config.mode === 'multi' && !this._config.showSelectedCount;
+      }
+
+      // When showSelectedCount is enabled, never hide selected from dropdown
+      if (this._config.showSelectedCount) {
+        this._config.hideSelected = false;
       }
 
       // Initialize search engine
@@ -778,6 +789,13 @@ export function createSelectizeComponent(userConfig = {}) {
       if (option[this._config.disabledField]) return;
 
       const value = option[this._config.valueField];
+
+      // In showSelectedCount mode, toggle selection on click
+      if (this._config.showSelectedCount && this.isMultiple && this.isSelected(option)) {
+        this.removeItem(value);
+        return;
+      }
+
       this.addItem(value);
       this.query = '';
 

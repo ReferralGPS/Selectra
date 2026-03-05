@@ -1,4 +1,4 @@
-/*! Selectra v1.0.4 | Apache-2.0 License */
+/*! Selectra v1.1.0 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -335,6 +335,7 @@ const DEFAULTS = {
   // 'single' | 'multi' — auto-detected
   search: true,
   showArrow: true,
+  showSelectedCount: false,
   valueField: "value",
   labelField: "text",
   disabledField: "disabled",
@@ -450,6 +451,10 @@ function createSelectizeComponent(userConfig = {}) {
       if (this.items.length > 0 && this.isSingle) return "";
       return this._config.placeholder || "";
     },
+    get selectedCountText() {
+      const count = this.items.length;
+      return count;
+    },
     get currentValueText() {
       if (!this.isSingle || !this.items.length) return "";
       const opt = this.options[hashKey(this.items[0])];
@@ -499,7 +504,10 @@ function createSelectizeComponent(userConfig = {}) {
         this._config.maxItems = 1;
       }
       if (this._config.hideSelected === null) {
-        this._config.hideSelected = this._config.mode === "multi";
+        this._config.hideSelected = this._config.mode === "multi" && !this._config.showSelectedCount;
+      }
+      if (this._config.showSelectedCount) {
+        this._config.hideSelected = false;
       }
       this._sifter = new Sifter(this.options, { diacritics: this._config.diacritics });
       this._initPlugins();
@@ -912,6 +920,10 @@ function createSelectizeComponent(userConfig = {}) {
       if (!option) return;
       if (option[this._config.disabledField]) return;
       const value = option[this._config.valueField];
+      if (this._config.showSelectedCount && this.isMultiple && this.isSelected(option)) {
+        this.removeItem(value);
+        return;
+      }
       this.addItem(value);
       this.query = "";
       if (this.isSingle) {
@@ -1334,11 +1346,15 @@ const SELECTRA_TEMPLATE = `
 <div class="selectra-control" :class="{'is-disabled': isDisabled}">
   <div @click="focus()" class="selectra-input"
        :class="{'is-focused': isFocused, 'is-invalid': isInvalid, 'is-locked': isLocked, 'is-single': isSingle, 'has-items': items.length > 0}">
+    <span x-show="_config.showSelectedCount && isMultiple"
+          class="selectra-selected-count">
+      <span x-text="selectedCountText"></span>
+    </span>
     <span x-show="isSingle && items.length && !isFocused"
           x-text="currentValueText"
           class="selectra-single-value"></span>
     <template x-for="val in items" :key="val">
-      <span x-show="isMultiple" class="selectra-item">
+      <span x-show="isMultiple && !_config.showSelectedCount" class="selectra-item">
         <span x-html="options[val] ? renderItem(options[val]) : val"></span>
         <span @click.stop="removeItem(val)" class="selectra-item-remove">&times;</span>
       </span>
@@ -1352,6 +1368,7 @@ const SELECTRA_TEMPLATE = `
            @paste="onPaste($event)"
            :placeholder="placeholderText"
            x-show="(isSingle || !isFull) && (isMultiple || isFocused || !items.length)"
+           :class="{'selectra-search-with-count': _config.showSelectedCount && isMultiple}"
            class="selectra-search">
     <span x-show="isFull && isMultiple" class="selectra-max-badge">Max reached</span>
     <div x-show="isLoading && !isOpen" class="selectra-spinner"></div>
@@ -1376,9 +1393,10 @@ const SELECTRA_TEMPLATE = `
             <div @click="selectOption(option)"
                  @mouseenter="activeIndex = group.offset + idx"
                  :data-active="activeIndex === group.offset + idx"
-                 :class="{'is-active': activeIndex === group.offset + idx}"
-                 class="selectra-option"
-                 x-html="renderOption(option)">
+                 :class="{'is-active': activeIndex === group.offset + idx, 'is-selected': isSelected(option)}"
+                 class="selectra-option">
+              <span x-show="_config.showSelectedCount && isMultiple && isSelected(option)" class="selectra-option-tick">&#10003;</span>
+              <span x-html="renderOption(option)"></span>
             </div>
           </template>
         </div>
@@ -1418,7 +1436,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.4";
+SelectraPlugin.version = "1.1.0";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,

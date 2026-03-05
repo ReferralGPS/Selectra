@@ -203,6 +203,15 @@
       </div>
     </section>
 
+    <!-- ── Demo 8: Multi Select with Count ────────────── -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select with Count</h2>
+      <p class="text-sm text-gray-500 mb-4">Shows number of selected items as a badge instead of individual tags. Selected options display a checkmark in the dropdown.</p>
+      <div class="max-w-md"
+        x-data="selectra({ mode: 'multi', showSelectedCount: true, options: countries, placeholder: 'Select countries...', items: ['us', 'fr'] })"
+        x-selectra x-cloak></div>
+    </section>
+
     <!-- Footer -->
     <footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
       <p>Selectra — rebuilt with Alpine.js &amp; Tailwind CSS</p>
