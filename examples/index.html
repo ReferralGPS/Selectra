@@ -76,6 +76,8 @@
 
     Alpine.plugin(Selectra);
     Alpine.start();
+
+    document.getElementById('selectra-version').textContent = `v${Selectra.version}`;
   </script>
 </head>
 
@@ -84,7 +86,7 @@
 
     <!-- Header -->
     <div class="mb-12">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Selectra</h1>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Selectra <span id="selectra-version" class="text-lg font-mono font-normal text-gray-400"></span></h1>
       <p class="text-gray-500 text-lg">Alpine.js + Tailwind CSS — No jQuery required</p>
       <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
         <strong>Easy integration:</strong> Just add <code
