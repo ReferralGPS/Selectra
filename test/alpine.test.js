@@ -296,4 +296,135 @@ describe('Selectra Component', () => {
       }).not.toThrow();
     });
   });
+
+  describe('selectedCountText', () => {
+    it('should return 0 when no items are selected', () => {
+      const factory = createSelectizeComponent({
+        mode: 'multi',
+        showSelectedCount: true,
+        options: [{ value: 'a', text: 'A' }, { value: 'b', text: 'B' }],
+      });
+      const component = factory();
+      component._config = { ...DEFAULTS, mode: 'multi', showSelectedCount: true };
+      component.items = [];
+      expect(component.selectedCountText).toBe(0);
+    });
+
+    it('should return 1 when one item is selected', () => {
+      const factory = createSelectizeComponent({ mode: 'multi', showSelectedCount: true });
+      const component = factory();
+      component._config = { ...DEFAULTS, mode: 'multi', showSelectedCount: true };
+      component.items = ['a'];
+      expect(component.selectedCountText).toBe(1);
+    });
+
+    it('should return count when multiple items are selected', () => {
+      const factory = createSelectizeComponent({ mode: 'multi', showSelectedCount: true });
+      const component = factory();
+      component._config = { ...DEFAULTS, mode: 'multi', showSelectedCount: true };
+      component.items = ['a', 'b', 'c'];
+      expect(component.selectedCountText).toBe(3);
+    });
+  });
+
+  describe('readSelectOptions - empty value placeholder', () => {
+    function createMockSelect(optionDefs) {
+      return {
+        children: optionDefs.map(def => ({
+          tagName: { toLowerCase: () => 'option' },
+          value: def.value,
+          textContent: def.text,
+          disabled: def.disabled || false,
+          selected: def.selected || false,
+          dataset: {},
+        })),
+      };
+    }
+
+    it('should treat empty-value option as placeholder text', () => {
+      const select = createMockSelect([
+        { value: '', text: 'Pick a fruit...' },
+        { value: 'apple', text: 'Apple' },
+        { value: 'banana', text: 'Banana' },
+      ]);
+      const parsed = readSelectOptions(select);
+      const emptyOpt = parsed.options.find(o => o.value === '');
+      expect(emptyOpt).toBeDefined();
+      expect(emptyOpt.text).toBe('Pick a fruit...');
+    });
+
+    it('should include empty-value option in parsed options list', () => {
+      const select = createMockSelect([
+        { value: '', text: 'Select...' },
+        { value: 'a', text: 'A' },
+        { value: 'b', text: 'B' },
+      ]);
+      const parsed = readSelectOptions(select);
+      expect(parsed.options).toHaveLength(3);
+      expect(parsed.options[0].value).toBe('');
+    });
+
+    it('should not include empty value in selectedValues when filtered', () => {
+      const select = createMockSelect([
+        { value: '', text: 'Select...', selected: true },
+        { value: 'a', text: 'A' },
+      ]);
+      const parsed = readSelectOptions(select);
+      // Our init code filters empty values from selectedValues
+      const realSelected = parsed.selectedValues.filter(v => v !== '');
+      expect(realSelected).toHaveLength(0);
+    });
+  });
+
+  describe('selectOption - empty value clears selection', () => {
+    it('should clear items when selecting empty-value option', () => {
+      const factory = createSelectizeComponent({ mode: 'single' });
+      const component = factory();
+      component._config = { ...DEFAULTS, mode: 'single', maxItems: 1 };
+      component.options = {
+        '': { value: '', text: 'Select...' },
+        'a': { value: 'a', text: 'Apple', $order: 1 },
+      };
+      component.items = ['a'];
+      component.isOpen = true;
+      component.isFocused = true;
+      component.$refs = { searchInput: { blur: () => {} } };
+      component.close = () => { component.isOpen = false; };
+      component._syncSourceElement = () => {};
+      component._clearRenderCache = () => {};
+      component._trigger = () => {};
+
+      component.selectOption({ value: '', text: 'Select...' });
+
+      expect(component.items).toHaveLength(0);
+      expect(component.isOpen).toBe(false);
+      expect(component.isFocused).toBe(false);
+    });
+
+    it('should not clear when selecting a real option', () => {
+      const factory = createSelectizeComponent({ mode: 'single' });
+      const component = factory();
+      component._config = { ...DEFAULTS, mode: 'single', maxItems: 1 };
+      component.options = {
+        '': { value: '', text: 'Select...' },
+        'a': { value: 'a', text: 'Apple', $order: 1 },
+        'b': { value: 'b', text: 'Banana', $order: 2 },
+      };
+      component.items = [];
+      component.caretPos = 0;
+      component.isOpen = true;
+      component.isFocused = true;
+      component.query = '';
+      component.loadedSearches = {};
+      component.$refs = { searchInput: { blur: () => {} } };
+      component.close = () => { component.isOpen = false; };
+      component._syncSourceElement = () => {};
+      component._clearRenderCache = () => {};
+      component._trigger = () => {};
+
+      component.selectOption({ value: 'a', text: 'Apple' });
+
+      expect(component.items).toEqual(['a']);
+    });
+  });
 });

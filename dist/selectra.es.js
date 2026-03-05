@@ -1,4 +1,4 @@
-/*! Selectra v1.0.6 | Apache-2.0 License */
+/*! Selectra v1.0.7 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -467,14 +467,19 @@ function createSelectizeComponent(userConfig = {}) {
       this._sourceEl = this.$el.querySelector('select, input[type="text"], input[type="hidden"]');
       if (this._sourceEl && isSelectElement(this._sourceEl)) {
         const parsed = readSelectOptions(this._sourceEl);
+        const placeholderOpt = parsed.options.find((o) => o.value === "");
+        if (placeholderOpt && !this._config.placeholder) {
+          this._config.placeholder = placeholderOpt.text;
+        }
+        const realSelected = parsed.selectedValues.filter((v) => v !== "");
         const configOptions = this._config.options || [];
         const allOptions = [...parsed.options, ...configOptions];
         this._registerOptions(allOptions);
         for (const og of parsed.optgroups) {
           this.optgroups[og.value] = og;
         }
-        if (parsed.selectedValues.length) {
-          this.items = [...parsed.selectedValues];
+        if (realSelected.length) {
+          this.items = [...realSelected];
         }
         if (!userConfig.mode) {
           this._config.mode = this._sourceEl.multiple ? "multi" : "single";
@@ -920,6 +925,13 @@ function createSelectizeComponent(userConfig = {}) {
       if (!option) return;
       if (option[this._config.disabledField]) return;
       const value = option[this._config.valueField];
+      if (value === "") {
+        this.clear();
+        this.close();
+        this.isFocused = false;
+        if (this.$refs.searchInput) this.$refs.searchInput.blur();
+        return;
+      }
       if (this._config.showSelectedCount && this.isMultiple && this.isSelected(option)) {
         this.removeItem(value);
         return;
@@ -1436,7 +1448,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.6";
+SelectraPlugin.version = "1.0.7";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,

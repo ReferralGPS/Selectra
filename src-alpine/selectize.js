@@ -200,6 +200,13 @@ export function createSelectizeComponent(userConfig = {}) {
       if (this._sourceEl && isSelectElement(this._sourceEl)) {
         const parsed = readSelectOptions(this._sourceEl);
 
+        // Treat empty-value option as placeholder (standard <select> pattern)
+        const placeholderOpt = parsed.options.find(o => o.value === '');
+        if (placeholderOpt && !this._config.placeholder) {
+          this._config.placeholder = placeholderOpt.text;
+        }
+        const realSelected = parsed.selectedValues.filter(v => v !== '');
+
         // Merge parsed options with config options
         const configOptions = this._config.options || [];
         const allOptions = [...parsed.options, ...configOptions];
@@ -211,8 +218,8 @@ export function createSelectizeComponent(userConfig = {}) {
         }
 
         // Set initial value
-        if (parsed.selectedValues.length) {
-          this.items = [...parsed.selectedValues];
+        if (realSelected.length) {
+          this.items = [...realSelected];
         }
 
         // Detect mode from select element
@@ -789,6 +796,15 @@ export function createSelectizeComponent(userConfig = {}) {
       if (option[this._config.disabledField]) return;
 
       const value = option[this._config.valueField];
+
+      // Selecting the empty-value placeholder option clears the selection
+      if (value === '') {
+        this.clear();
+        this.close();
+        this.isFocused = false;
+        if (this.$refs.searchInput) this.$refs.searchInput.blur();
+        return;
+      }
 
       // In showSelectedCount mode, toggle selection on click
       if (this._config.showSelectedCount && this.isMultiple && this.isSelected(option)) {
