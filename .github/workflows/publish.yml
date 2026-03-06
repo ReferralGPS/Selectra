@@ -1,18 +1,79 @@
-name: Publish to GitHub Packages
+name: Publish
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
-
-permissions:
-  contents: read
-  packages: write
+    branches:
+      - master
 
 jobs:
-  publish:
+  ci:
     runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-npm:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@referralgps'
+
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to npmjs.com
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          generate_release_notes: true
+          files: |
+            dist/selectra.es.js
+            dist/selectra.umd.js
+            dist/selectra.iife.js
+            dist/selectra.css
+
+  publish-gpr:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,11 +83,11 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@referralgps'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
       - name: Publish to GitHub Packages
         run: npm publish
