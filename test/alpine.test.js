@@ -222,6 +222,10 @@ describe('Selectra Component', () => {
     it('should have dropdownPlaceholder render default as null', () => {
       expect(DEFAULTS.render.dropdownPlaceholder).toBeNull();
     });
+
+    it('should have name default as null', () => {
+      expect(DEFAULTS.name).toBeNull();
+    });
   });
 
   describe('renderNoResults', () => {
