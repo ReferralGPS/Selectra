@@ -331,6 +331,8 @@ const DEFAULTS = {
   loadingClass: "loading",
   placeholder: "",
   dropdownPlaceholder: "",
+  name: null,
+  // Form field name — auto-creates hidden input when no source element exists
   mode: null,
   // 'single' | 'multi' — auto-detected
   search: true,
@@ -501,6 +503,17 @@ function createSelectizeComponent(userConfig = {}) {
         if (this._config.items) {
           this.items = [...this._config.items];
         }
+        if (this._config.name) {
+          const hidden = document.createElement("input");
+          hidden.type = "hidden";
+          hidden.name = this._config.name;
+          if (this.items.length) {
+            hidden.value = this.items.join(this._config.delimiter);
+          }
+          this.$el.appendChild(hidden);
+          this._sourceEl = hidden;
+          this._createdHiddenInput = true;
+        }
       }
       if (!this._config.mode) {
         this._config.mode = this._config.maxItems === 1 ? "single" : "multi";
@@ -539,8 +552,12 @@ function createSelectizeComponent(userConfig = {}) {
     destroy() {
       document.removeEventListener("mousedown", this._onClickOutside);
       if (this._sourceEl) {
-        this._sourceEl.style.display = "";
-        this._sourceEl.removeAttribute("tabindex");
+        if (this._createdHiddenInput) {
+          this._sourceEl.remove();
+        } else {
+          this._sourceEl.style.display = "";
+          this._sourceEl.removeAttribute("tabindex");
+        }
       }
     },
     // ── Plugin System ───────────────────────────────────────

@@ -123,6 +123,26 @@ Show the number of selected items as a badge instead of individual tags. Selecte
 })" x-selectra></div>
 ```
 
+#### Form Field Name
+
+Use the `name` option to auto-create a hidden `<input>` for form submission — no `<select>` element needed:
+
+```html
+<form method="POST" action="/submit">
+  <div x-data="selectra({
+    mode: 'multi',
+    name: 'languages',
+    placeholder: 'Select languages...',
+    options: [
+      { value: 'js', text: 'JavaScript' },
+      { value: 'py', text: 'Python' },
+      { value: 'go', text: 'Go' },
+    ]
+  })" x-selectra></div>
+  <button type="submit">Submit</button>
+</form>
+```
+
 #### Native `<select>` Enhancement
 
 Enhance a standard `<select>` element — options are read automatically:
@@ -151,6 +171,7 @@ Enhance a standard `<select>` element — options are read automatically:
 | `createOnBlur` | `boolean` | `false` | Create item when field loses focus |
 | `createFilter` | `RegExp \| function` | `null` | Filter for creatable values |
 | `placeholder` | `string` | `''` | Placeholder text |
+| `name` | `string \| null` | `null` | Form field name — auto-creates hidden input when no source element exists |
 | `valueField` | `string` | `'value'` | Property for option value |
 | `labelField` | `string` | `'text'` | Property for display label |
 | `searchField` | `string[]` | `['text']` | Fields to search |

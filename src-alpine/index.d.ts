@@ -49,6 +49,7 @@ export interface SelectraConfig {
   loadThrottle?: number | null;
   placeholder?: string;
   dropdownPlaceholder?: string;
+  name?: string | null;
   mode?: 'single' | 'multi' | null;
   search?: boolean;
   showArrow?: boolean;
