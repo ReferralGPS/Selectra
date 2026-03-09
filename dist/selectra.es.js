@@ -575,15 +575,28 @@ function createSelectizeComponent(userConfig = {}) {
       }
     },
     // ── Option Management ───────────────────────────────────
+    _normalizeOption(opt) {
+      if (Array.isArray(opt) && !Array.isArray(opt[0])) {
+        return {
+          [this._config.labelField]: opt[0],
+          [this._config.valueField]: opt[1]
+        };
+      }
+      return opt;
+    },
     _registerOptions(optionsList) {
       for (const opt of optionsList) {
-        this.addOption(opt, true);
+        this.addOption(this._normalizeOption(opt), true);
       }
     },
     addOption(data, silent = false) {
       if (Array.isArray(data)) {
-        for (const item of data) this.addOption(item, silent);
-        return;
+        if (data.length && !Array.isArray(data[0]) && typeof data[0] !== "object") {
+          data = this._normalizeOption(data);
+        } else {
+          for (const item of data) this.addOption(this._normalizeOption(item), silent);
+          return;
+        }
       }
       const key = hashKey(data[this._config.valueField]);
       if (key === null || this.options[key]) return;

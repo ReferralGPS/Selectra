@@ -42,6 +42,7 @@ Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/sele
 - **RTL Support** — auto-detected from CSS `direction`
 - **Tailwind CSS** — fully styled with utilities, trivially customizable
 - **Selected Count Mode** — show a count badge instead of tags in multi-select, with checkmarks on selected options
+- **Array-Format Options** — pass `[text, value]` tuples directly (e.g. from Rails `pluck`)
 - **Lightweight** — ~25 KB gzipped JS, zero runtime dependencies beyond Alpine.js
 
 ---
@@ -141,6 +142,22 @@ Use the `name` option to auto-create a hidden `<input>` for form submission — 
   })" x-selectra></div>
   <button type="submit">Submit</button>
 </form>
+```
+
+#### Array-Format Options
+
+Pass options as `[text, value]` tuples — ideal for data from Rails `pluck` or similar:
+
+```html
+<div x-data="selectra({
+  mode: 'single',
+  placeholder: 'Select provider...',
+  options: [
+    ['Aetna Better Health', 121],
+    ['Blue Cross Blue Shield', 205],
+    ['Cigna Healthcare', 310],
+  ]
+})" x-selectra></div>
 ```
 
 #### Native `<select>` Enhancement

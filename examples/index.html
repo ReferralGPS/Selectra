@@ -229,7 +229,25 @@
       </div>
     </section>
 
-    <!-- ── Demo 9: Multi Select with Count ────────────── -->
+    <!-- ── Demo 9: Array-Format Options ───────────────── -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Array-Format Options</h2>
+      <p class="text-sm text-gray-500 mb-4">Pass options as <code>[text, value]</code> tuples — ideal for data from Rails <code>pluck</code> or similar APIs.</p>
+      <div class="max-w-md"
+        x-data="selectra({ mode: 'single', placeholder: 'Select a provider...', options: [
+          ['None', ''],
+          ['Java', 121],
+          ['Python', 205],
+          ['Ruby', 310],
+          ['Rust', 415],
+          ['Kotlin', 522],
+          ['Go', 630],
+          ['Swift', 748],
+        ] })"
+        x-selectra x-cloak></div>
+    </section>
+
+    <!-- ── Demo 10: Multi Select with Count ───────────── -->
     <section class="mb-12">
       <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select with Count</h2>
       <p class="text-sm text-gray-500 mb-4">Shows number of selected items as a badge instead of individual tags. Selected options display a checkmark in the dropdown.</p>
