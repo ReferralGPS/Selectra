@@ -331,6 +331,8 @@ const DEFAULTS = {
   loadingClass: "loading",
   placeholder: "",
   dropdownPlaceholder: "",
+  name: null,
+  // Form field name — auto-creates hidden input when no source element exists
   mode: null,
   // 'single' | 'multi' — auto-detected
   search: true,
@@ -508,6 +510,22 @@ function createSelectizeComponent(userConfig = {}) {
       if (this._config.mode === "single") {
         this._config.maxItems = 1;
       }
+      if (this._config.name && !this._sourceEl) {
+        if (this._config.mode === "single") {
+          const hidden = document.createElement("input");
+          hidden.type = "hidden";
+          hidden.name = this._config.name;
+          hidden.value = this.items[0] || "";
+          this.$el.appendChild(hidden);
+          this._sourceEl = hidden;
+        } else {
+          this._hiddenInputContainer = document.createElement("div");
+          this._hiddenInputContainer.style.display = "none";
+          this.$el.appendChild(this._hiddenInputContainer);
+          this._syncHiddenInputs();
+        }
+        this._createdHiddenInput = true;
+      }
       if (this._config.hideSelected === null) {
         this._config.hideSelected = this._config.mode === "multi" && !this._config.showSelectedCount;
       }
@@ -538,9 +556,15 @@ function createSelectizeComponent(userConfig = {}) {
     },
     destroy() {
       document.removeEventListener("mousedown", this._onClickOutside);
-      if (this._sourceEl) {
-        this._sourceEl.style.display = "";
-        this._sourceEl.removeAttribute("tabindex");
+      if (this._hiddenInputContainer) {
+        this._hiddenInputContainer.remove();
+      } else if (this._sourceEl) {
+        if (this._createdHiddenInput) {
+          this._sourceEl.remove();
+        } else {
+          this._sourceEl.style.display = "";
+          this._sourceEl.removeAttribute("tabindex");
+        }
       }
     },
     // ── Plugin System ───────────────────────────────────────
@@ -558,15 +582,28 @@ function createSelectizeComponent(userConfig = {}) {
       }
     },
     // ── Option Management ───────────────────────────────────
+    _normalizeOption(opt) {
+      if (Array.isArray(opt) && !Array.isArray(opt[0])) {
+        return {
+          [this._config.labelField]: opt[0],
+          [this._config.valueField]: opt[1]
+        };
+      }
+      return opt;
+    },
     _registerOptions(optionsList) {
       for (const opt of optionsList) {
-        this.addOption(opt, true);
+        this.addOption(this._normalizeOption(opt), true);
       }
     },
     addOption(data, silent = false) {
       if (Array.isArray(data)) {
-        for (const item of data) this.addOption(item, silent);
-        return;
+        if (data.length && !Array.isArray(data[0]) && typeof data[0] !== "object") {
+          data = this._normalizeOption(data);
+        } else {
+          for (const item of data) this.addOption(this._normalizeOption(item), silent);
+          return;
+        }
       }
       const key = hashKey(data[this._config.valueField]);
       if (key === null || this.options[key]) return;
@@ -1097,9 +1134,25 @@ function createSelectizeComponent(userConfig = {}) {
       this._config.maxItems = max;
       if (this.isFull) this.close();
     },
+    // ── Hidden Input Sync (multi-select with name config) ──
+    _syncHiddenInputs() {
+      if (!this._hiddenInputContainer) return;
+      this._hiddenInputContainer.innerHTML = "";
+      for (const val of this.items) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = this._config.name;
+        input.value = val;
+        this._hiddenInputContainer.appendChild(input);
+      }
+    },
     // ── Source Element Sync ─────────────────────────────────
     _syncSourceElement() {
       var _a;
+      if (this._hiddenInputContainer) {
+        this._syncHiddenInputs();
+        return;
+      }
       if (!this._sourceEl) return;
       if (isSelectElement(this._sourceEl)) {
         for (const opt of this._sourceEl.options) {

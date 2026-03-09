@@ -35,6 +35,7 @@ Selectra is a modern rewrite of [Selectize.js](https://github.com/selectize/sele
 - **RTL Support** — auto-detected from CSS `direction`
 - **Tailwind CSS** — fully styled with utilities, trivially customizable
 - **Selected Count Mode** — show a count badge instead of tags in multi-select, with checkmarks on selected options
+- **Array-Format Options** — pass `[text, value]` tuples directly (e.g. from Rails `pluck`)
 - **Lightweight** — ~25 KB gzipped JS, zero runtime dependencies beyond Alpine.js
 
 ---
@@ -139,6 +140,42 @@ Show the number of selected items as a badge instead of individual tags. Selecte
 })" x-selectra x-cloak></div>
 ```
 
+#### Form Field Name
+
+Use the `name` option to auto-create a hidden `<input>` for form submission — no `<select>` element needed:
+
+```html
+<form method="POST" action="/submit">
+  <div x-data="selectra({
+    mode: 'multi',
+    name: 'languages',
+    placeholder: 'Select languages...',
+    options: [
+      { value: 'js', text: 'JavaScript' },
+      { value: 'py', text: 'Python' },
+      { value: 'go', text: 'Go' },
+    ]
+  })" x-selectra x-cloak></div>
+  <button type="submit">Submit</button>
+</form>
+```
+
+#### Array-Format Options
+
+Pass options as `[text, value]` tuples — ideal for data from Rails `pluck` or similar:
+
+```html
+<div x-data="selectra({
+  mode: 'single',
+  placeholder: 'Select provider...',
+  options: [
+    ['Aetna Better Health', 121],
+    ['Blue Cross Blue Shield', 205],
+    ['Cigna Healthcare', 310],
+  ]
+})" x-selectra x-cloak></div>
+```
+
 #### Native `<select>` Enhancement
 
 ```html
@@ -181,6 +218,7 @@ Show the number of selected items as a badge instead of individual tags. Selecte
 | `createOnBlur` | `boolean` | `false` | Create item when field loses focus |
 | `createFilter` | `RegExp \| function` | `null` | Filter for creatable values |
 | `placeholder` | `string` | `''` | Placeholder text |
+| `name` | `string \| null` | `null` | Form field name — auto-creates hidden input when no source element exists |
 | `valueField` | `string` | `'value'` | Property for option value |
 | `labelField` | `string` | `'text'` | Property for display label |
 | `searchField` | `string[]` | `['text']` | Fields to search |

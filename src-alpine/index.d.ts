@@ -49,6 +49,7 @@ export interface SelectraConfig {
   loadThrottle?: number | null;
   placeholder?: string;
   dropdownPlaceholder?: string;
+  name?: string | null;
   mode?: 'single' | 'multi' | null;
   search?: boolean;
   showArrow?: boolean;
@@ -68,7 +69,7 @@ export interface SelectraConfig {
   setFirstOptionActive?: boolean;
   preload?: boolean | 'focus';
 
-  options?: SelectraOption[];
+  options?: (SelectraOption | [string, string | number])[];
   optgroups?: SelectraOptgroup[];
   items?: string[];
   plugins?: Array<string | { name: string; options?: Record<string, any> }>;
