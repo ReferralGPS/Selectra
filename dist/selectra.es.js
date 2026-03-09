@@ -503,23 +503,28 @@ function createSelectizeComponent(userConfig = {}) {
         if (this._config.items) {
           this.items = [...this._config.items];
         }
-        if (this._config.name) {
-          const hidden = document.createElement("input");
-          hidden.type = "hidden";
-          hidden.name = this._config.name;
-          if (this.items.length) {
-            hidden.value = this.items.join(this._config.delimiter);
-          }
-          this.$el.appendChild(hidden);
-          this._sourceEl = hidden;
-          this._createdHiddenInput = true;
-        }
       }
       if (!this._config.mode) {
         this._config.mode = this._config.maxItems === 1 ? "single" : "multi";
       }
       if (this._config.mode === "single") {
         this._config.maxItems = 1;
+      }
+      if (this._config.name && !this._sourceEl) {
+        if (this._config.mode === "single") {
+          const hidden = document.createElement("input");
+          hidden.type = "hidden";
+          hidden.name = this._config.name;
+          hidden.value = this.items[0] || "";
+          this.$el.appendChild(hidden);
+          this._sourceEl = hidden;
+        } else {
+          this._hiddenInputContainer = document.createElement("div");
+          this._hiddenInputContainer.style.display = "none";
+          this.$el.appendChild(this._hiddenInputContainer);
+          this._syncHiddenInputs();
+        }
+        this._createdHiddenInput = true;
       }
       if (this._config.hideSelected === null) {
         this._config.hideSelected = this._config.mode === "multi" && !this._config.showSelectedCount;
@@ -551,7 +556,9 @@ function createSelectizeComponent(userConfig = {}) {
     },
     destroy() {
       document.removeEventListener("mousedown", this._onClickOutside);
-      if (this._sourceEl) {
+      if (this._hiddenInputContainer) {
+        this._hiddenInputContainer.remove();
+      } else if (this._sourceEl) {
         if (this._createdHiddenInput) {
           this._sourceEl.remove();
         } else {
@@ -1127,9 +1134,25 @@ function createSelectizeComponent(userConfig = {}) {
       this._config.maxItems = max;
       if (this.isFull) this.close();
     },
+    // ── Hidden Input Sync (multi-select with name config) ──
+    _syncHiddenInputs() {
+      if (!this._hiddenInputContainer) return;
+      this._hiddenInputContainer.innerHTML = "";
+      for (const val of this.items) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = this._config.name;
+        input.value = val;
+        this._hiddenInputContainer.appendChild(input);
+      }
+    },
     // ── Source Element Sync ─────────────────────────────────
     _syncSourceElement() {
       var _a;
+      if (this._hiddenInputContainer) {
+        this._syncHiddenInputs();
+        return;
+      }
       if (!this._sourceEl) return;
       if (isSelectElement(this._sourceEl)) {
         for (const opt of this._sourceEl.options) {

@@ -256,18 +256,7 @@ export function createSelectizeComponent(userConfig = {}) {
           this.items = [...this._config.items];
         }
 
-        // Create hidden input for form submission when name is configured
-        if (this._config.name) {
-          const hidden = document.createElement('input');
-          hidden.type = 'hidden';
-          hidden.name = this._config.name;
-          if (this.items.length) {
-            hidden.value = this.items.join(this._config.delimiter);
-          }
-          this.$el.appendChild(hidden);
-          this._sourceEl = hidden;
-          this._createdHiddenInput = true;
-        }
+        // Hidden input creation deferred until after mode detection (see below)
       }
 
       // Mode detection
@@ -278,6 +267,28 @@ export function createSelectizeComponent(userConfig = {}) {
       // Set maxItems=1 for single mode
       if (this._config.mode === 'single') {
         this._config.maxItems = 1;
+      }
+
+      // Create hidden input(s) for form submission when name is configured
+      // (must run after mode detection so we know single vs multi)
+      if (this._config.name && !this._sourceEl) {
+        if (this._config.mode === 'single') {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = this._config.name;
+          hidden.value = this.items[0] || '';
+          this.$el.appendChild(hidden);
+          this._sourceEl = hidden;
+        } else {
+          // Multi-select: one hidden input per selected item so the form
+          // submits a real array (e.g. name="foo[]") instead of a single
+          // comma-joined string.
+          this._hiddenInputContainer = document.createElement('div');
+          this._hiddenInputContainer.style.display = 'none';
+          this.$el.appendChild(this._hiddenInputContainer);
+          this._syncHiddenInputs();
+        }
+        this._createdHiddenInput = true;
       }
 
       // Default hideSelected
@@ -327,7 +338,9 @@ export function createSelectizeComponent(userConfig = {}) {
 
     destroy() {
       document.removeEventListener('mousedown', this._onClickOutside);
-      if (this._sourceEl) {
+      if (this._hiddenInputContainer) {
+        this._hiddenInputContainer.remove();
+      } else if (this._sourceEl) {
         if (this._createdHiddenInput) {
           // Remove auto-created hidden input
           this._sourceEl.remove();
@@ -1040,8 +1053,25 @@ export function createSelectizeComponent(userConfig = {}) {
       if (this.isFull) this.close();
     },
 
+    // ── Hidden Input Sync (multi-select with name config) ──
+    _syncHiddenInputs() {
+      if (!this._hiddenInputContainer) return;
+      this._hiddenInputContainer.innerHTML = '';
+      for (const val of this.items) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = this._config.name;
+        input.value = val;
+        this._hiddenInputContainer.appendChild(input);
+      }
+    },
+
     // ── Source Element Sync ─────────────────────────────────
     _syncSourceElement() {
+      if (this._hiddenInputContainer) {
+        this._syncHiddenInputs();
+        return;
+      }
       if (!this._sourceEl) return;
 
       if (isSelectElement(this._sourceEl)) {
