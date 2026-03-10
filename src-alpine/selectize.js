@@ -194,8 +194,11 @@ export function createSelectizeComponent(userConfig = {}) {
       this._id = uid();
       this._config = { ...DEFAULTS, ...userConfig };
 
-      // Detect source element
-      this._sourceEl = this.$el.querySelector('select, input[type="text"], input[type="hidden"]');
+      // Detect source element (prefer <select> over <input> so that
+      // Rails-style hidden inputs generated for multiple selects don't
+      // shadow the real <select>)
+      this._sourceEl = this.$el.querySelector('select')
+        || this.$el.querySelector('input[type="text"], input[type="hidden"]');
 
       // Read options from <select> if present
       if (this._sourceEl && isSelectElement(this._sourceEl)) {
