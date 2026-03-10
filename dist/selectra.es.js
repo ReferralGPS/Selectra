@@ -1490,7 +1490,26 @@ const SELECTRA_TEMPLATE = `
   </div>
 </div>
 `.trim();
+function _wrapSelectElements() {
+  document.querySelectorAll("select[x-selectra]").forEach((select) => {
+    const configExpr = select.getAttribute("x-selectra") || "{}";
+    const wrapper = document.createElement("div");
+    if (select.classList.length) {
+      wrapper.className = select.className;
+    }
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select);
+    wrapper.setAttribute("x-data", `selectra(${configExpr})`);
+    wrapper.setAttribute("x-selectra", "");
+    wrapper.setAttribute("x-cloak", "");
+    select.removeAttribute("x-selectra");
+    select.removeAttribute("x-data");
+    select.removeAttribute("x-cloak");
+  });
+}
 function SelectraPlugin(Alpine) {
+  _wrapSelectElements();
+  document.addEventListener("alpine:init", _wrapSelectElements);
   Alpine.data("selectra", (config = {}) => {
     const componentFactory = createSelectizeComponent(config);
     return componentFactory();

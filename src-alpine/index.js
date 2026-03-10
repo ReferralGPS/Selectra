@@ -126,9 +126,49 @@ const SELECTRA_TEMPLATE = `
 `.trim();
 
 /**
+ * Auto-wrap any <select x-selectra> in a <div> so Alpine can render the
+ * custom UI as sibling content. Safe to call multiple times — already-wrapped
+ * selects are skipped because x-selectra is removed after wrapping.
+ */
+function _wrapSelectElements() {
+  document.querySelectorAll('select[x-selectra]').forEach((select) => {
+    const configExpr = select.getAttribute('x-selectra') || '{}';
+    const wrapper = document.createElement('div');
+
+    // Copy class to wrapper for styling (e.g. max-w-md, form-control)
+    if (select.classList.length) {
+      wrapper.className = select.className;
+    }
+
+    // Insert wrapper where the select is, then move select inside
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select);
+
+    // Set up Alpine directives on the wrapper
+    wrapper.setAttribute('x-data', `selectra(${configExpr})`);
+    wrapper.setAttribute('x-selectra', '');
+    wrapper.setAttribute('x-cloak', '');
+
+    // Remove from the select so it doesn't get processed twice
+    select.removeAttribute('x-selectra');
+    select.removeAttribute('x-data');
+    select.removeAttribute('x-cloak');
+  });
+}
+
+/**
  * Alpine.js plugin installer
  */
 function SelectraPlugin(Alpine) {
+  // Wrap <select x-selectra> elements synchronously during plugin registration.
+  // Alpine.plugin() is always called before Alpine.start(), so this is
+  // guaranteed to run before Alpine walks the DOM tree.
+  _wrapSelectElements();
+
+  // Also listen for alpine:init as a safety net for late-parsed DOM
+  // (e.g. Turbo frames, deferred scripts). No-op if already wrapped.
+  document.addEventListener('alpine:init', _wrapSelectElements);
+
   // Register the selectra data component
   Alpine.data('selectra', (config = {}) => {
     const componentFactory = createSelectizeComponent(config);

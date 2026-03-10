@@ -189,6 +189,36 @@ Pass options as `[text, value]` tuples — ideal for data from Rails `pluck` or 
 </div>
 ```
 
+#### Direct on `<select>` (No Wrapper Needed)
+
+Place `x-selectra` directly on a `<select>` element — the plugin auto-wraps it in a `<div>` before Alpine initializes. Pass config as the directive value.
+
+```html
+<!-- Single select -->
+<select x-selectra="{ placeholder: 'Pick a fruit...' }">
+  <option value="">Pick a fruit...</option>
+  <option value="apple">Apple</option>
+  <option value="banana">Banana</option>
+  <option value="cherry">Cherry</option>
+</select>
+
+<!-- Multi select — mode is auto-detected from the multiple attribute -->
+<select multiple x-selectra="{ placeholder: 'Select languages...', plugins: ['remove_button'] }">
+  <option value="js">JavaScript</option>
+  <option value="py">Python</option>
+  <option value="go">Go</option>
+</select>
+```
+
+This is especially convenient with Rails form helpers:
+
+```erb
+<%= f.select :language_ids,
+      options_for_select(Language.pluck(:name, :id), f.object.language_ids),
+      { include_blank: true },
+      { multiple: true, "x-selectra" => "{ placeholder: 'Languages', plugins: ['remove_button'] }" } %>
+```
+
 #### Remote Loading
 
 ```html

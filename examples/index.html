@@ -256,6 +256,28 @@
         x-selectra x-cloak></div>
     </section>
 
+    <!-- ── Demo 11: Direct on <select> ────────────────── -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Direct on &lt;select&gt;</h2>
+      <p class="text-sm text-gray-500 mb-4">Place <code>x-selectra</code> directly on a <code>&lt;select&gt;</code> — no wrapper <code>&lt;div&gt;</code> needed. The plugin auto-wraps it.</p>
+      <select class="max-w-md" x-selectra="{ placeholder: 'Pick a fruit...' }">
+        <option value="">Pick a fruit...</option>
+        <option value="apple">Apple</option>
+        <option value="banana">Banana</option>
+        <option value="cherry">Cherry</option>
+        <option value="grape">Grape</option>
+        <option value="mango">Mango</option>
+      </select>
+    </section>
+
+    <!-- ── Demo 12: Direct Multi-select on <select> ───── -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-800 mb-1">Direct Multi-select on &lt;select&gt;</h2>
+      <p class="text-sm text-gray-500 mb-4">A <code>&lt;select multiple&gt;</code> with <code>x-selectra</code> directly on it. Mode is auto-detected from the <code>multiple</code> attribute.</p>
+      <select class="max-w-md" multiple x-selectra="{ placeholder: 'Select languages...', plugins: ['remove_button'], options: programmingLanguages }">
+      </select>
+    </section>
+
     <!-- Footer -->
     <footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
       <p>Selectra — rebuilt with Alpine.js &amp; Tailwind CSS</p>
