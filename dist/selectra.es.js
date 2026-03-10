@@ -1,4 +1,4 @@
-/*! Selectra v1.0.10 | Apache-2.0 License */
+/*! Selectra v1.0.11 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -466,7 +466,7 @@ function createSelectizeComponent(userConfig = {}) {
     init() {
       this._id = uid();
       this._config = { ...DEFAULTS, ...userConfig };
-      this._sourceEl = this.$el.querySelector('select, input[type="text"], input[type="hidden"]');
+      this._sourceEl = this.$el.querySelector("select") || this.$el.querySelector('input[type="text"], input[type="hidden"]');
       if (this._sourceEl && isSelectElement(this._sourceEl)) {
         const parsed = readSelectOptions(this._sourceEl);
         const placeholderOpt = parsed.options.find((o) => o.value === "");
@@ -1501,7 +1501,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.10";
+SelectraPlugin.version = "1.0.11";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,
