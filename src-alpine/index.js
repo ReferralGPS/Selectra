@@ -14,16 +14,11 @@
  *   Alpine.plugin(Selectra);
  *   Alpine.start();
  *
- *   // 2. Use it — that's it!
- *   <div x-data="selectra({ options: [...], placeholder: 'Pick...' })" x-selectra></div>
- *
- *   // Or with a native <select> for progressive enhancement:
- *   <div x-data="selectra()" x-selectra>
- *     <select>
- *       <option value="1">One</option>
- *       <option value="2">Two</option>
- *     </select>
- *   </div>
+ *   // 2. Use it on a native <select> — that's it!
+ *   <select x-selectra="{ placeholder: 'Pick...' }">
+ *     <option value="1">One</option>
+ *     <option value="2">Two</option>
+ *   </select>
  */
 
 import { createSelectizeComponent, registerPlugin, getDefaults, DEFAULTS } from './selectize.js';

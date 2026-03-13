@@ -76,103 +76,88 @@ Alpine.start();
 
 ## Quick Start
 
-Add `x-data="selectra({...})"` and `x-selectra` to any element. The template is rendered automatically by the `x-selectra` directive — no manual markup required.
+Use native `<select>` tags with `x-selectra` for progressive enhancement — works as a standard select when JavaScript is disabled!
 
 #### Single Select
 
 ```html
-<div x-data="selectra({
-  mode: 'single',
-  placeholder: 'Select a country...',
-  options: [
-    { value: 'us', text: 'United States' },
-    { value: 'ca', text: 'Canada' },
-    { value: 'mx', text: 'Mexico' },
-  ]
-})" x-selectra></div>
+<select x-selectra="{ placeholder: 'Select a country...' }">
+  <option value="">Select a country...</option>
+  <option value="us">United States</option>
+  <option value="ca">Canada</option>
+  <option value="mx">Mexico</option>
+</select>
 ```
 
 #### Multi Select with Tags
 
 ```html
-<div x-data="selectra({
+<select multiple x-selectra="{ placeholder: 'Select languages...', create: true }">
+  <option value="js">JavaScript</option>
+  <option value="py">Python</option>
+  <option value="go">Go</option>
+</select>
+```
+
+#### Multi Select with Count Badge
+
+Show the number of selected items as a badge instead of individual tags. Selected options display a ✓ checkmark in the dropdown.
+
+```html
+<select multiple x-selectra="{ showSelectedCount: true, placeholder: 'Select countries...' }">
+  <option value="us">United States</option>
+  <option value="ca">Canada</option>
+  <option value="mx">Mexico</option>
+</select>
+```
+
+#### Form Submission
+
+Use native `<select>` elements directly in forms — Selectra enhances the UI while maintaining standard semantics:
+
+```html
+<form method="POST" action="/submit">
+  <select name="languages" multiple x-selectra="{ placeholder: 'Select languages...' }">
+    <option value="js">JavaScript</option>
+    <option value="py">Python</option>
+    <option value="go">Go</option>
+  </select>
+  <button type="submit">Submit</button>
+</form>
+```
+
+#### Standard `<select>` with Optgroups
+
+Selectra preserves HTML semantics like `<optgroup>`:
+
+```html
+<select x-selectra>
+  <optgroup label="Fruits">
+    <option value="apple">Apple</option>
+    <option value="banana">Banana</option>
+    <option value="cherry">Cherry</option>
+  </optgroup>
+  <optgroup label="Vegetables">
+    <option value="carrot">Carrot</option>
+    <option value="broccoli">Broccoli</option>
+  </optgroup>
+</select>
+```
+
+#### Config-Only Mode (Advanced)
+
+For dynamic options loaded via JavaScript, use `x-data`:
+
+```html
+<div x-data=\"selectra({
   mode: 'multi',
   placeholder: 'Select languages...',
-  create: true,
   options: [
     { value: 'js', text: 'JavaScript' },
     { value: 'py', text: 'Python' },
     { value: 'go', text: 'Go' },
   ]
-})" x-selectra></div>
-```
-
-#### Multi Select with Count Badge
-
-Show the number of selected items as a badge instead of individual tags. Selected options display a ✓ checkmark in the dropdown and can be toggled on/off by clicking.
-
-```html
-<div x-data="selectra({
-  mode: 'multi',
-  showSelectedCount: true,
-  placeholder: 'Select countries...',
-  options: [
-    { value: 'us', text: 'United States' },
-    { value: 'ca', text: 'Canada' },
-    { value: 'mx', text: 'Mexico' },
-  ]
-})" x-selectra></div>
-```
-
-#### Form Field Name
-
-Use the `name` option to auto-create a hidden `<input>` for form submission — no `<select>` element needed:
-
-```html
-<form method="POST" action="/submit">
-  <div x-data="selectra({
-    mode: 'multi',
-    name: 'languages',
-    placeholder: 'Select languages...',
-    options: [
-      { value: 'js', text: 'JavaScript' },
-      { value: 'py', text: 'Python' },
-      { value: 'go', text: 'Go' },
-    ]
-  })" x-selectra></div>
-  <button type="submit">Submit</button>
-</form>
-```
-
-#### Array-Format Options
-
-Pass options as `[text, value]` tuples — ideal for data from Rails `pluck` or similar:
-
-```html
-<div x-data="selectra({
-  mode: 'single',
-  placeholder: 'Select provider...',
-  options: [
-    ['Aetna Better Health', 121],
-    ['Blue Cross Blue Shield', 205],
-    ['Cigna Healthcare', 310],
-  ]
-})" x-selectra></div>
-```
-
-#### Native `<select>` Enhancement
-
-Enhance a standard `<select>` element — options are read automatically:
-
-```html
-<div x-data="selectra()" x-selectra>
-  <select>
-    <option value="">Pick a fruit...</option>
-    <option value="apple">Apple</option>
-    <option value="banana">Banana</option>
-    <option value="cherry">Cherry</option>
-  </select>
-</div>
+})\" x-selectra></div>
 ```
 
 ## Configuration
@@ -344,7 +329,7 @@ npm run test     # Run tests
 
 | jQuery Selectize | Selectra |
 |-----------------|---------------------|
-| `$('select').selectize({...})` | `x-data="selectra({...})"` |
+| `$('select').selectize({...})` | `<select x-selectra="{...}">` |
 | `instance.addItem(val)` | Direct method call in Alpine scope |
 | `$.fn.selectize` plugin | `Alpine.plugin(Selectra)` |
 | jQuery events | Custom DOM events |

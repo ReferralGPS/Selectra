@@ -1,4 +1,4 @@
-/*! Selectra v1.0.11 | Apache-2.0 License */
+/*! Selectra v1.1.0 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -1396,16 +1396,11 @@ registerPlugin("auto_position", function() {
  *   Alpine.plugin(Selectra);
  *   Alpine.start();
  *
- *   // 2. Use it — that's it!
- *   <div x-data="selectra({ options: [...], placeholder: 'Pick...' })" x-selectra></div>
- *
- *   // Or with a native <select> for progressive enhancement:
- *   <div x-data="selectra()" x-selectra>
- *     <select>
- *       <option value="1">One</option>
- *       <option value="2">Two</option>
- *     </select>
- *   </div>
+ *   // 2. Use it on a native <select> — that's it!
+ *   <select x-selectra="{ placeholder: 'Pick...' }">
+ *     <option value="1">One</option>
+ *     <option value="2">Two</option>
+ *   </select>
  */
 const SELECTRA_TEMPLATE = `
 <div class="selectra-control" :class="{'is-disabled': isDisabled}">
@@ -1520,7 +1515,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.11";
+SelectraPlugin.version = "1.1.0";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,
