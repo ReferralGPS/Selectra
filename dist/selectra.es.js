@@ -1,4 +1,4 @@
-/*! Selectra v1.0.10 | Apache-2.0 License */
+/*! Selectra v1.1.0 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -466,7 +466,7 @@ function createSelectizeComponent(userConfig = {}) {
     init() {
       this._id = uid();
       this._config = { ...DEFAULTS, ...userConfig };
-      this._sourceEl = this.$el.querySelector('select, input[type="text"], input[type="hidden"]');
+      this._sourceEl = this.$el.querySelector("select") || this.$el.querySelector('input[type="text"], input[type="hidden"]');
       if (this._sourceEl && isSelectElement(this._sourceEl)) {
         const parsed = readSelectOptions(this._sourceEl);
         const placeholderOpt = parsed.options.find((o) => o.value === "");
@@ -1396,16 +1396,11 @@ registerPlugin("auto_position", function() {
  *   Alpine.plugin(Selectra);
  *   Alpine.start();
  *
- *   // 2. Use it — that's it!
- *   <div x-data="selectra({ options: [...], placeholder: 'Pick...' })" x-selectra></div>
- *
- *   // Or with a native <select> for progressive enhancement:
- *   <div x-data="selectra()" x-selectra>
- *     <select>
- *       <option value="1">One</option>
- *       <option value="2">Two</option>
- *     </select>
- *   </div>
+ *   // 2. Use it on a native <select> — that's it!
+ *   <select x-selectra="{ placeholder: 'Pick...' }">
+ *     <option value="1">One</option>
+ *     <option value="2">Two</option>
+ *   </select>
  */
 const SELECTRA_TEMPLATE = `
 <div class="selectra-control" :class="{'is-disabled': isDisabled}">
@@ -1490,7 +1485,26 @@ const SELECTRA_TEMPLATE = `
   </div>
 </div>
 `.trim();
+function _wrapSelectElements() {
+  document.querySelectorAll("select[x-selectra]").forEach((select) => {
+    const configExpr = select.getAttribute("x-selectra") || "{}";
+    const wrapper = document.createElement("div");
+    if (select.classList.length) {
+      wrapper.className = select.className;
+    }
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select);
+    wrapper.setAttribute("x-data", `selectra(${configExpr})`);
+    wrapper.setAttribute("x-selectra", "");
+    wrapper.setAttribute("x-cloak", "");
+    select.removeAttribute("x-selectra");
+    select.removeAttribute("x-data");
+    select.removeAttribute("x-cloak");
+  });
+}
 function SelectraPlugin(Alpine) {
+  _wrapSelectElements();
+  document.addEventListener("alpine:init", _wrapSelectElements);
   Alpine.data("selectra", (config = {}) => {
     const componentFactory = createSelectizeComponent(config);
     return componentFactory();
@@ -1501,7 +1515,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.0.10";
+SelectraPlugin.version = "1.1.0";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,
