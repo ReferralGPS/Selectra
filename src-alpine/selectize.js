@@ -211,6 +211,24 @@ export function createSelectizeComponent(userConfig = {}) {
         }
         const realSelected = parsed.selectedValues.filter(v => v !== '');
 
+        // Remap parsed options so `value`/`text` align with configured field names.
+        // readSelectOptions always produces { value, text, ... } but the user
+        // may set valueField/labelField to something else (e.g. 'id'/'name')
+        // for remote-loaded data.  We need the <select> options to use the
+        // same field names so addOption() can key them properly.
+        const vf = this._config.valueField;
+        const lf = this._config.labelField;
+        if (vf !== 'value' || lf !== 'text') {
+          for (const opt of parsed.options) {
+            if (vf !== 'value' && opt[vf] === undefined) {
+              opt[vf] = opt.value;
+            }
+            if (lf !== 'text' && opt[lf] === undefined) {
+              opt[lf] = opt.text;
+            }
+          }
+        }
+
         // Merge parsed options with config options
         const configOptions = this._config.options || [];
         const allOptions = [...parsed.options, ...configOptions];

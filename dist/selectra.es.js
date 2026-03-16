@@ -1,4 +1,4 @@
-/*! Selectra v1.1.0 | Apache-2.0 License */
+/*! Selectra v1.1.1 | Apache-2.0 License */
 const DIACRITICS = {
   a: "[aḀḁĂăÂâǍǎȺⱥȦȧẠạÄäÀàÁáĀāÃãÅåąĄÃąĄ]",
   b: "[b␢βΒB฿𐌁ᛒ]",
@@ -474,6 +474,18 @@ function createSelectizeComponent(userConfig = {}) {
           this._config.placeholder = placeholderOpt.text;
         }
         const realSelected = parsed.selectedValues.filter((v) => v !== "");
+        const vf = this._config.valueField;
+        const lf = this._config.labelField;
+        if (vf !== "value" || lf !== "text") {
+          for (const opt of parsed.options) {
+            if (vf !== "value" && opt[vf] === void 0) {
+              opt[vf] = opt.value;
+            }
+            if (lf !== "text" && opt[lf] === void 0) {
+              opt[lf] = opt.text;
+            }
+          }
+        }
         const configOptions = this._config.options || [];
         const allOptions = [...parsed.options, ...configOptions];
         this._registerOptions(allOptions);
@@ -1515,7 +1527,7 @@ function SelectraPlugin(Alpine) {
     }
   });
 }
-SelectraPlugin.version = "1.1.0";
+SelectraPlugin.version = "1.1.1";
 SelectraPlugin.template = SELECTRA_TEMPLATE;
 export {
   DEFAULTS,
