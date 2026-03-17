@@ -1,364 +1,701 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selectra — Alpine.js + Tailwind CSS</title>
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Selectra — Alpine.js + Tailwind CSS</title>
-  <style>
-    [x-cloak] {
-      display: none !important;
-    }
-  </style>
+    <!-- Selectra CSS -->
+    <link rel="stylesheet" href="../dist/selectra.css" />
 
-  <!-- Selectra CSS -->
-  <link rel="stylesheet" href="../dist/selectra.css">
+    <script type="module">
+      import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js";
+      import Selectra from "../dist/selectra.es.js";
 
-  <script type="module">
-    import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js"
-    import Selectra from "../dist/selectra.es.js"
+      // A helper for the remote-loading demo
+      window.simulateRemoteLoad = (query, callback) => {
+        const all = [
+          { value: "us", text: "United States (country)" },
+          { value: "ca", text: "Canada (country)" },
+          { value: "mx", text: "Mexico (country)" },
+          { value: "gb", text: "United Kingdom (country)" },
+          { value: "fr", text: "France (country)" },
+          { value: "de", text: "Germany (country)" },
+          { value: "it", text: "Italy (country)" },
+          { value: "es", text: "Spain (country)" },
+          { value: "lang-js", text: "JavaScript (language)" },
+          { value: "lang-ts", text: "TypeScript (language)" },
+          { value: "lang-py", text: "Python (language)" },
+          { value: "lang-rb", text: "Ruby (language)" },
+          { value: "lang-go", text: "Go (language)" },
+          { value: "lang-rs", text: "Rust (language)" },
+        ];
+        setTimeout(() => {
+          callback(
+            all.filter((i) =>
+              i.text.toLowerCase().includes(query.toLowerCase()),
+            ),
+          );
+        }, 500);
+      };
 
-    // A helper for the remote-loading demo
-    window.simulateRemoteLoad = (query, callback) => {
-      const all = [
-        { value: 'us', text: 'United States (country)' }, { value: 'ca', text: 'Canada (country)' },
-        { value: 'mx', text: 'Mexico (country)' }, { value: 'gb', text: 'United Kingdom (country)' },
-        { value: 'fr', text: 'France (country)' }, { value: 'de', text: 'Germany (country)' },
-        { value: 'it', text: 'Italy (country)' }, { value: 'es', text: 'Spain (country)' },
-        { value: 'lang-js', text: 'JavaScript (language)' }, { value: 'lang-ts', text: 'TypeScript (language)' },
-        { value: 'lang-py', text: 'Python (language)' }, { value: 'lang-rb', text: 'Ruby (language)' },
-        { value: 'lang-go', text: 'Go (language)' }, { value: 'lang-rs', text: 'Rust (language)' },
-      ];
-      setTimeout(() => {
-        callback(all.filter(i => i.text.toLowerCase().includes(query.toLowerCase())));
-      }, 500);
-    };
+      Alpine.plugin(Selectra);
+      Alpine.start();
 
-    Alpine.plugin(Selectra);
-    Alpine.start();
+      document.getElementById("selectra-version").textContent =
+        `v${Selectra.version}`;
+    </script>
+  </head>
 
-    document.getElementById('selectra-version').textContent = `v${Selectra.version}`;
-  </script>
-</head>
-
-<body class="bg-gray-50 min-h-screen">
-  <div class="max-w-4xl mx-auto px-6 py-12">
-
-    <!-- Header -->
-    <div class="mb-12">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Selectra <span id="selectra-version" class="text-lg font-mono font-normal text-gray-400"></span></h1>
-      <p class="text-gray-500 text-lg">Alpine.js + Tailwind CSS — No jQuery required</p>
-      <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-        <strong>Progressive Enhancement:</strong> Use native <code class="bg-blue-100 px-1 rounded">&lt;select&gt;</code> tags with <code class="bg-blue-100 px-1 rounded">x-selectra</code>. Works as a standard select when JavaScript is disabled!
-      </div>
-    </div>
-
-    <!-- ── Demo 1: Single Select ──────────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Single Select</h2>
-      <p class="text-sm text-gray-500 mb-4">Basic single-value selection with search.</p>
-      <select class="max-w-md" x-selectra="{ placeholder: 'Select a country...' }">
-        <option value="">Select a country...</option>
-        <option value="us">United States</option>
-        <option value="ca">Canada</option>
-        <option value="mx">Mexico</option>
-        <option value="gb">United Kingdom</option>
-        <option value="fr">France</option>
-        <option value="de">Germany</option>
-        <option value="it">Italy</option>
-        <option value="es">Spain</option>
-        <option value="pt">Portugal</option>
-        <option value="nl">Netherlands</option>
-        <option value="be">Belgium</option>
-        <option value="ch">Switzerland</option>
-        <option value="at">Austria</option>
-        <option value="au">Australia</option>
-        <option value="nz">New Zealand</option>
-        <option value="jp">Japan</option>
-        <option value="kr">South Korea</option>
-        <option value="cn">China</option>
-        <option value="in">India</option>
-        <option value="br">Brazil</option>
-        <option value="ar">Argentina</option>
-        <option value="za">South Africa</option>
-        <option value="ng">Nigeria</option>
-        <option value="eg">Egypt</option>
-        <option value="se">Sweden</option>
-        <option value="no">Norway</option>
-        <option value="dk">Denmark</option>
-        <option value="fi">Finland</option>
-        <option value="pl">Poland</option>
-        <option value="ie">Ireland</option>
-      </select>
-    </section>
-
-    <!-- ── Demo 2: Multi Select with Tags ─────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select (Tags)</h2>
-      <p class="text-sm text-gray-500 mb-4">Select multiple values with removable tags.</p>
-      <select class="max-w-md" multiple x-selectra="{ placeholder: 'Select languages...' }">
-        <option value="js" selected>JavaScript</option>
-        <option value="ts">TypeScript</option>
-        <option value="py" selected>Python</option>
-        <option value="rb">Ruby</option>
-        <option value="go">Go</option>
-        <option value="rs">Rust</option>
-        <option value="java">Java</option>
-        <option value="cs">C#</option>
-        <option value="cpp">C++</option>
-        <option value="swift">Swift</option>
-        <option value="kt">Kotlin</option>
-        <option value="php">PHP</option>
-        <option value="elixir">Elixir</option>
-        <option value="zig">Zig</option>
-        <option value="lua">Lua</option>
-      </select>
-    </section>
-
-    <!-- ── Demo 3: Tagging (Create New) ───────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Tagging (Create New)</h2>
-      <p class="text-sm text-gray-500 mb-4">Create new tags on the fly. Supports paste with comma-separated values.</p>
-      <select class="max-w-md" multiple x-selectra="{ create: true, createOnBlur: true, closeAfterSelect: true, placeholder: 'Add tags...' }">
-        <option value="bug">bug</option>
-        <option value="feature">feature</option>
-        <option value="enhancement">enhancement</option>
-        <option value="documentation">documentation</option>
-        <option value="help-wanted">help wanted</option>
-      </select>
-    </section>
-
-    <!-- ── Demo 4: Optgroups ──────────────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Option Groups</h2>
-      <p class="text-sm text-gray-500 mb-4">Grouped options with headers.</p>
-      <select class="max-w-md" x-selectra="{ placeholder: 'Choose...' }">
-        <option value="">Choose...</option>
-        <optgroup label="Greek Letters">
-          <option value="alpha">Alpha</option>
-          <option value="beta">Beta</option>
-          <option value="gamma">Gamma</option>
-          <option value="delta">Delta</option>
-        </optgroup>
-        <optgroup label="Latin Letters">
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
-          <option value="d">D</option>
-        </optgroup>
-        <optgroup label="Numbers">
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-          <option value="4">Four</option>
-        </optgroup>
-      </select>
-    </section>
-
-    <!-- ── Demo 5: Remote Loading (multi) ─────────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading (Multi)</h2>
-      <p class="text-sm text-gray-500 mb-4">Load options from API with search. Try typing "a", "b", or "c".</p>
-      <select class="max-w-md" multiple x-selectra="{ placeholder: 'Type to search...', loadThrottle: 300, load: simulateRemoteLoad, dropdownPlaceholder: 'Type to search...' }"></select>
-    </section>
-
-    <!-- ── Demo 5.1: Remote Loading (single) ─────────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Remote Loading (Single)</h2>
-      <p class="text-sm text-gray-500 mb-4">Load options from API for single select. Try typing "a", "b", or "c".</p>
-      <select class="max-w-md" x-selectra="{ placeholder: 'Type to search...', loadThrottle: 300, load: simulateRemoteLoad, dropdownPlaceholder: 'Type to search for single...' }"></select>
-    </section>
-
-    <!-- ── Demo 6: Max Items ──────────────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Max Items Limit</h2>
-      <p class="text-sm text-gray-500 mb-4">Limited to 3 items maximum.</p>
-      <select class="max-w-md" multiple x-selectra="{ maxItems: 3, placeholder: 'Pick up to 3...' }">
-        <option value="us">United States</option>
-        <option value="ca">Canada</option>
-        <option value="mx">Mexico</option>
-        <option value="gb">United Kingdom</option>
-        <option value="fr">France</option>
-        <option value="de">Germany</option>
-        <option value="it">Italy</option>
-        <option value="es">Spain</option>
-        <option value="pt">Portugal</option>
-        <option value="nl">Netherlands</option>
-        <option value="be">Belgium</option>
-        <option value="ch">Switzerland</option>
-        <option value="at">Austria</option>
-        <option value="au">Australia</option>
-        <option value="nz">New Zealand</option>
-        <option value="jp">Japan</option>
-        <option value="kr">South Korea</option>
-        <option value="cn">China</option>
-        <option value="in">India</option>
-        <option value="br">Brazil</option>
-        <option value="ar">Argentina</option>
-        <option value="za">South Africa</option>
-        <option value="ng">Nigeria</option>
-        <option value="eg">Egypt</option>
-        <option value="se">Sweden</option>
-        <option value="no">Norway</option>
-        <option value="dk">Denmark</option>
-        <option value="fi">Finland</option>
-        <option value="pl">Poland</option>
-        <option value="ie">Ireland</option>
-      </select>
-    </section>
-
-    <!-- ── Demo 7: Native <select> Enhancement ────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Native &lt;select&gt; Enhancement</h2>
-      <p class="text-sm text-gray-500 mb-4">Place <code>x-selectra</code> directly on a <code>&lt;select&gt;</code> — options are read automatically. Works without JavaScript!</p>
-      <select class="max-w-md" x-selectra>
-        <option value="">Select a fruit...</option>
-        <option value="apple">Apple</option>
-        <option value="banana">Banana</option>
-        <option value="cherry">Cherry</option>
-        <option value="grape">Grape</option>
-        <option value="mango">Mango</option>
-        <option value="orange">Orange</option>
-        <option value="peach">Peach</option>
-        <option value="strawberry">Strawberry</option>
-      </select>
-    </section>
-
-    <!-- ── Demo 8: Form Field Name ────────────────────── -->
-    <section class="mb-12" x-data="{ submitted: false, formEntries: [] }">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Form Field Name</h2>
-      <p class="text-sm text-gray-500 mb-4">Use a native <code>&lt;select&gt;</code> with multiple to submit form data. Selectra enhances the UI while maintaining standard HTML semantics.</p>
-      <form class="max-w-md" @submit.prevent="
-        formEntries = [...new FormData($el).entries()];
-        submitted = true;
-      ">
-        <div class="mb-3">
-          <select name="languages" multiple x-selectra="{ placeholder: 'Select languages...' }">
-            <option value="js" selected>JavaScript</option>
-            <option value="ts">TypeScript</option>
-            <option value="py">Python</option>
-            <option value="rb">Ruby</option>
-            <option value="go">Go</option>
-            <option value="rs">Rust</option>
-            <option value="java">Java</option>
-            <option value="cs">C#</option>
-            <option value="cpp">C++</option>
-            <option value="swift">Swift</option>
-            <option value="kt">Kotlin</option>
-            <option value="php">PHP</option>
-            <option value="elixir">Elixir</option>
-            <option value="zig">Zig</option>
-            <option value="lua">Lua</option>
-          </select>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <!-- Header -->
+      <header class="mb-16">
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+        >
+          <div>
+            <div class="flex items-center gap-3">
+              <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">
+                Selectra
+              </h1>
+              <span
+                class="px-2 py-1 bg-slate-100 text-slate-500 rounded text-xs font-mono font-medium"
+                >v1.1.1</span
+              >
+            </div>
+            <p class="mt-3 text-lg text-slate-600 max-w-lg leading-relaxed">
+              Alpine.js + Tailwind CSS component. No jQuery required. Fully
+              accessible and customizable.
+            </p>
+          </div>
+          <div>
+            <a
+              class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+              href="https://github.com/ReferralGPS/Selectra"
+              target="_blank"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5"
+                fill="currentColor"
+                viewbox="0 0 24 24"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  fill-rule="evenodd"
+                ></path>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
         </div>
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Submit</button>
-      </form>
-      <div x-show="submitted" x-cloak class="max-w-md mt-4 p-4 bg-green-50 border border-green-200 rounded text-green-800 text-sm">
-        <strong>Submitted form data:</strong>
-        <ul class="list-disc list-inside mt-1">
-          <template x-for="[key, val] in formEntries" :key="key + '=' + val">
-            <li><span x-text="key"></span> = <span x-text="val"></span></li>
-          </template>
-        </ul>
-      </div>
-    </section>
+        <div
+          class="mt-10 p-5 bg-indigo-50 border border-indigo-100 rounded-xl flex gap-4"
+        >
+          <div class="shrink-0 text-indigo-500">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewbox="0 0 24 24"
+            >
+              <path
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+          </div>
+          <div class="text-sm leading-relaxed text-indigo-800">
+            <strong class="font-semibold block mb-0.5"
+              >Progressive Enhancement</strong
+            >
+            Use native <code>&lt;select&gt;</code> tags with
+            <code>x-selectra</code>. It falls back to a standard select when
+            JavaScript is disabled or hasn't loaded.
+          </div>
+        </div>
+      </header>
 
-    <!-- ── Demo 9: Array-Format Options ───────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Standard Select</h2>
-      <p class="text-sm text-gray-500 mb-4">Selectra works seamlessly with standard semantic HTML <code>&lt;select&gt;</code> elements. No configuration needed for simple cases.</p>
-      <select class="max-w-md" x-selectra>
-        <option value="">Select a provider...</option>
-        <option value="121">Java</option>
-        <option value="205">Python</option>
-        <option value="310">Ruby</option>
-        <option value="415">Rust</option>
-        <option value="522">Kotlin</option>
-        <option value="630">Go</option>
-        <option value="748">Swift</option>
-      </select>
-    </section>
+      <main class="space-y-8">
+        <!-- ── Demo 1: Single Select ──────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Single Select</h2>
+            <p class="text-slate-500 text-sm my-1">
+              Basic single-value selection with search.
+            </p>
+            <select
+              class="w-full my-2"
+              x-selectra="{ placeholder: 'Select a country...' }"
+            >
+              <option value="">Select a country...</option>
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="mx">Mexico</option>
+              <option value="gb">United Kingdom</option>
+              <option value="fr">France</option>
+              <option value="de">Germany</option>
+              <option value="it">Italy</option>
+              <option value="es">Spain</option>
+              <option value="pt">Portugal</option>
+              <option value="nl">Netherlands</option>
+              <option value="be">Belgium</option>
+              <option value="ch">Switzerland</option>
+              <option value="at">Austria</option>
+              <option value="au">Australia</option>
+              <option value="nz">New Zealand</option>
+              <option value="jp">Japan</option>
+              <option value="kr">South Korea</option>
+              <option value="cn">China</option>
+              <option value="in">India</option>
+              <option value="br">Brazil</option>
+              <option value="ar">Argentina</option>
+              <option value="za">South Africa</option>
+              <option value="ng">Nigeria</option>
+              <option value="eg">Egypt</option>
+              <option value="se">Sweden</option>
+              <option value="no">Norway</option>
+              <option value="dk">Denmark</option>
+              <option value="fi">Finland</option>
+              <option value="pl">Poland</option>
+              <option value="ie">Ireland</option>
+            </select>
+          </div>
+        </section>
 
-    <!-- ── Demo 10: Multi Select with Count ───────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Multi Select with Count</h2>
-      <p class="text-sm text-gray-500 mb-4">Shows number of selected items as a badge instead of individual tags. Selected options display a checkmark in the dropdown.</p>
-      <select class="max-w-md" multiple x-selectra="{ showSelectedCount: true, placeholder: 'Select countries...' }">
-        <option value="us" selected>United States</option>
-        <option value="ca">Canada</option>
-        <option value="mx">Mexico</option>
-        <option value="gb">United Kingdom</option>
-        <option value="fr" selected>France</option>
-        <option value="de">Germany</option>
-        <option value="it">Italy</option>
-        <option value="es">Spain</option>
-        <option value="pt">Portugal</option>
-        <option value="nl">Netherlands</option>
-        <option value="be">Belgium</option>
-        <option value="ch">Switzerland</option>
-        <option value="at">Austria</option>
-        <option value="au">Australia</option>
-        <option value="nz">New Zealand</option>
-        <option value="jp">Japan</option>
-        <option value="kr">South Korea</option>
-        <option value="cn">China</option>
-        <option value="in">India</option>
-        <option value="br">Brazil</option>
-        <option value="ar">Argentina</option>
-        <option value="za">South Africa</option>
-        <option value="ng">Nigeria</option>
-        <option value="eg">Egypt</option>
-        <option value="se">Sweden</option>
-        <option value="no">Norway</option>
-        <option value="dk">Denmark</option>
-        <option value="fi">Finland</option>
-        <option value="pl">Poland</option>
-        <option value="ie">Ireland</option>
-      </select>
-    </section>
+        <!-- ── Demo 2: Multi Select with Tags ─────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Multi Select (Tags)
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Select multiple values with removable tags.
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ placeholder: 'Select languages...' }"
+            >
+              <option value="js" selected>JavaScript</option>
+              <option value="ts">TypeScript</option>
+              <option value="py" selected>Python</option>
+              <option value="rb">Ruby</option>
+              <option value="go">Go</option>
+              <option value="rs">Rust</option>
+              <option value="java">Java</option>
+              <option value="cs">C#</option>
+              <option value="cpp">C++</option>
+              <option value="swift">Swift</option>
+              <option value="kt">Kotlin</option>
+              <option value="php">PHP</option>
+              <option value="elixir">Elixir</option>
+              <option value="zig">Zig</option>
+              <option value="lua">Lua</option>
+            </select>
+          </div>
+        </section>
 
-    <!-- ── Demo 11: Direct on <select> ────────────────── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Direct on &lt;select&gt;</h2>
-      <p class="text-sm text-gray-500 mb-4">Place <code>x-selectra</code> directly on a <code>&lt;select&gt;</code> — no wrapper <code>&lt;div&gt;</code> needed. The plugin auto-wraps it.</p>
-      <select class="max-w-md" x-selectra="{ placeholder: 'Pick a fruit...' }">
-        <option value="">Pick a fruit...</option>
-        <option value="apple">Apple</option>
-        <option value="banana">Banana</option>
-        <option value="cherry">Cherry</option>
-        <option value="grape">Grape</option>
-        <option value="mango">Mango</option>
-      </select>
-    </section>
+        <!-- ── Demo 3: Tagging (Create New) ───────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Tagging (Create New)
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Create new tags on the fly. Supports paste with comma-separated
+              values.
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ create: true, createOnBlur: true, closeAfterSelect: true, placeholder: 'Add tags...' }"
+            >
+              <option value="bug">bug</option>
+              <option value="feature">feature</option>
+              <option value="enhancement">enhancement</option>
+              <option value="documentation">documentation</option>
+              <option value="help-wanted">help wanted</option>
+            </select>
+          </div>
+        </section>
 
-    <!-- ── Demo 12: Direct Multi-select on <select> ───── -->
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-800 mb-1">Direct Multi-select on &lt;select&gt;</h2>
-      <p class="text-sm text-gray-500 mb-4">A <code>&lt;select multiple&gt;</code> with <code>x-selectra</code> directly on it. Mode is auto-detected from the <code>multiple</code> attribute.</p>
-      <select class="max-w-md" multiple x-selectra="{ placeholder: 'Select languages...', plugins: ['remove_button'] }">
-        <option value="js">JavaScript</option>
-        <option value="ts">TypeScript</option>
-        <option value="py">Python</option>
-        <option value="rb">Ruby</option>
-        <option value="go">Go</option>
-        <option value="rs">Rust</option>
-        <option value="java">Java</option>
-        <option value="cs">C#</option>
-        <option value="cpp">C++</option>
-        <option value="swift">Swift</option>
-        <option value="kt">Kotlin</option>
-        <option value="php">PHP</option>
-        <option value="elixir">Elixir</option>
-        <option value="zig">Zig</option>
-        <option value="lua">Lua</option>
-      </select>
-    </section>
+        <!-- ── Demo 4: Optgroups ──────────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Option Groups</h2>
+            <p class="text-slate-500 text-sm my-1">
+              Grouped options with headers.
+            </p>
+            <select
+              class="w-full my-2"
+              x-selectra="{ placeholder: 'Choose...' }"
+            >
+              <option value="">Choose...</option>
+              <optgroup label="Greek Letters">
+                <option value="alpha">Alpha</option>
+                <option value="beta">Beta</option>
+                <option value="gamma">Gamma</option>
+                <option value="delta">Delta</option>
+              </optgroup>
+              <optgroup label="Latin Letters">
+                <option value="a">A</option>
+                <option value="b">B</option>
+                <option value="c">C</option>
+                <option value="d">D</option>
+              </optgroup>
+              <optgroup label="Numbers">
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+                <option value="4">Four</option>
+              </optgroup>
+            </select>
+          </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
-      <p>Selectra — rebuilt with Alpine.js &amp; Tailwind CSS</p>
-    </footer>
-  </div>
-</body>
+        <!-- ── Demo 5: Remote Loading (multi) ─────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Remote Loading (Multi)
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Load options from API with search. Try typing "a", "b", or "c".
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ placeholder: 'Type to search...', loadThrottle: 300, load: simulateRemoteLoad, dropdownPlaceholder: 'Type to search...' }"
+            ></select>
+          </div>
+        </section>
 
+        <!-- ── Demo 5.1: Remote Loading (single) ─────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Remote Loading (Single)
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Load options from API for single select. Try typing "a", "b", or
+              "c".
+            </p>
+            <select
+              class="w-full my-2"
+              x-selectra="{ placeholder: 'Type to search...', loadThrottle: 300, load: simulateRemoteLoad, dropdownPlaceholder: 'Type to search for single...' }"
+            ></select>
+          </div>
+        </section>
+
+        <!-- ── Demo 6: Max Items ──────────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Max Items Limit</h2>
+            <p class="text-slate-500 text-sm my-1">
+              Limited to 3 items maximum.
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ maxItems: 3, placeholder: 'Pick up to 3...' }"
+            >
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="mx">Mexico</option>
+              <option value="gb">United Kingdom</option>
+              <option value="fr">France</option>
+              <option value="de">Germany</option>
+              <option value="it">Italy</option>
+              <option value="es">Spain</option>
+              <option value="pt">Portugal</option>
+              <option value="nl">Netherlands</option>
+              <option value="be">Belgium</option>
+              <option value="ch">Switzerland</option>
+              <option value="at">Austria</option>
+              <option value="au">Australia</option>
+              <option value="nz">New Zealand</option>
+              <option value="jp">Japan</option>
+              <option value="kr">South Korea</option>
+              <option value="cn">China</option>
+              <option value="in">India</option>
+              <option value="br">Brazil</option>
+              <option value="ar">Argentina</option>
+              <option value="za">South Africa</option>
+              <option value="ng">Nigeria</option>
+              <option value="eg">Egypt</option>
+              <option value="se">Sweden</option>
+              <option value="no">Norway</option>
+              <option value="dk">Denmark</option>
+              <option value="fi">Finland</option>
+              <option value="pl">Poland</option>
+              <option value="ie">Ireland</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ── Demo 7: Native <select> Enhancement ────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Native &lt;select&gt; Enhancement
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Place <code>x-selectra</code> directly on a
+              <code>&lt;select&gt;</code> — options are read automatically.
+              Works without JavaScript!
+            </p>
+            <select class="w-full my-2" x-selectra>
+              <option value="">Select a fruit...</option>
+              <option value="apple">Apple</option>
+              <option value="banana">Banana</option>
+              <option value="cherry">Cherry</option>
+              <option value="grape">Grape</option>
+              <option value="mango">Mango</option>
+              <option value="orange">Orange</option>
+              <option value="peach">Peach</option>
+              <option value="strawberry">Strawberry</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ── Demo 8: Form Field Name ────────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+          x-data="{ submitted: false, formEntries: [] }"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Form Field Name</h2>
+            <p class="text-slate-500 text-sm my-1">
+              Use a native <code>&lt;select&gt;</code> with multiple to submit
+              form data. Selectra enhances the UI while maintaining standard
+              HTML semantics.
+            </p>
+            <form
+              class="w-full my-2"
+              @submit.prevent="
+          formEntries = [...new FormData($el).entries()];
+          submitted = true;
+        "
+            >
+              <div class="mb-3">
+                <select
+                  name="languages"
+                  multiple
+                  x-selectra="{ placeholder: 'Select languages...' }"
+                >
+                  <option value="js" selected>JavaScript</option>
+                  <option value="ts">TypeScript</option>
+                  <option value="py">Python</option>
+                  <option value="rb">Ruby</option>
+                  <option value="go">Go</option>
+                  <option value="rs">Rust</option>
+                  <option value="java">Java</option>
+                  <option value="cs">C#</option>
+                  <option value="cpp">C++</option>
+                  <option value="swift">Swift</option>
+                  <option value="kt">Kotlin</option>
+                  <option value="php">PHP</option>
+                  <option value="elixir">Elixir</option>
+                  <option value="zig">Zig</option>
+                  <option value="lua">Lua</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </form>
+            <div
+              x-show="submitted"
+              x-cloak
+              class="w-full my-2 mt-4 p-4 bg-green-50 border border-green-200 rounded text-green-800 text-sm"
+            >
+              <strong>Submitted form data:</strong>
+              <ul class="list-disc list-inside mt-1">
+                <template
+                  x-for="[key, val] in formEntries"
+                  :key="key + '=' + val"
+                >
+                  <li>
+                    <span x-text="key"></span> = <span x-text="val"></span>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Demo 9: Array-Format Options ───────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Standard Select</h2>
+            <p class="text-slate-500 text-sm my-1">
+              Selectra works seamlessly with standard semantic HTML
+              <code>&lt;select&gt;</code> elements. No configuration needed for
+              simple cases.
+            </p>
+            <select class="w-full my-2" x-selectra>
+              <option value="">Select a provider...</option>
+              <option value="121">Java</option>
+              <option value="205">Python</option>
+              <option value="310">Ruby</option>
+              <option value="415">Rust</option>
+              <option value="522">Kotlin</option>
+              <option value="630">Go</option>
+              <option value="748">Swift</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ── Demo 10: Multi Select with Count ───────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-6">
+            <h2 class="text-lg font-bold text-slate-900">
+              Multi Select with Count
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Shows number of selected items as a badge instead of individual
+              tags. Selected options display a checkmark in the dropdown.
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ showSelectedCount: true, placeholder: 'Select countries...' }"
+            >
+              <option value="us" selected>United States</option>
+              <option value="ca">Canada</option>
+              <option value="mx">Mexico</option>
+              <option value="gb">United Kingdom</option>
+              <option value="fr" selected>France</option>
+              <option value="de">Germany</option>
+              <option value="it">Italy</option>
+              <option value="es">Spain</option>
+              <option value="pt">Portugal</option>
+              <option value="nl">Netherlands</option>
+              <option value="be">Belgium</option>
+              <option value="ch">Switzerland</option>
+              <option value="at">Austria</option>
+              <option value="au">Australia</option>
+              <option value="nz">New Zealand</option>
+              <option value="jp">Japan</option>
+              <option value="kr">South Korea</option>
+              <option value="cn">China</option>
+              <option value="in">India</option>
+              <option value="br">Brazil</option>
+              <option value="ar">Argentina</option>
+              <option value="za">South Africa</option>
+              <option value="ng">Nigeria</option>
+              <option value="eg">Egypt</option>
+              <option value="se">Sweden</option>
+              <option value="no">Norway</option>
+              <option value="dk">Denmark</option>
+              <option value="fi">Finland</option>
+              <option value="pl">Poland</option>
+              <option value="ie">Ireland</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ── Demo 11: Direct on <select> ────────────────── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-bold text-slate-900">
+              Direct on &lt;select&gt;
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              Place <code>x-selectra</code> directly on a
+              <code>&lt;select&gt;</code> — no wrapper
+              <code>&lt;div&gt;</code> needed. The plugin auto-wraps it.
+            </p>
+            <select
+              class="w-full my-2"
+              x-selectra="{ placeholder: 'Pick a fruit...' }"
+            >
+              <option value="">Pick a fruit...</option>
+              <option value="apple">Apple</option>
+              <option value="banana">Banana</option>
+              <option value="cherry">Cherry</option>
+              <option value="grape">Grape</option>
+              <option value="mango">Mango</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ── Demo 12: Direct Multi-select on <select> ───── -->
+        <section
+          class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm"
+        >
+          <div class="mb-6">
+            <h2 class="text-lg font-bold text-slate-900">
+              Direct Multi-select on &lt;select&gt;
+            </h2>
+            <p class="text-slate-500 text-sm my-1">
+              A <code>&lt;select multiple&gt;</code> with
+              <code>x-selectra</code> directly on it. Mode is auto-detected from
+              the <code>multiple</code> attribute.
+            </p>
+            <select
+              class="w-full my-2"
+              multiple
+              x-selectra="{ placeholder: 'Select languages...', plugins: ['remove_button'] }"
+            >
+              <option value="js">JavaScript</option>
+              <option value="ts">TypeScript</option>
+              <option value="py">Python</option>
+              <option value="rb">Ruby</option>
+              <option value="go">Go</option>
+              <option value="rs">Rust</option>
+              <option value="java">Java</option>
+              <option value="cs">C#</option>
+              <option value="cpp">C++</option>
+              <option value="swift">Swift</option>
+              <option value="kt">Kotlin</option>
+              <option value="php">PHP</option>
+              <option value="elixir">Elixir</option>
+              <option value="zig">Zig</option>
+              <option value="lua">Lua</option>
+            </select>
+          </div>
+        </section>
+      </main>
+
+      <section class="mt-20 border-t border-slate-200 pt-12">
+        <h3
+          class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8 text-center"
+        >
+          Maintainers
+        </h3>
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-8">
+          <a
+            class="flex items-center gap-3 group"
+            href="https://github.com/BrijeshSajeev"
+            target="_blank"
+          >
+            <svg
+              class="w-10 h-10 rounded-full border-2 border-white shadow-sm ring-1 ring-slate-200 group-hover:ring-indigo-400 transition-all"
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="BrijeshSajeev avatar"
+            >
+              <circle cx="20" cy="20" r="20" fill="#0EA5E9" />
+              <text
+                x="50%"
+                y="54%"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="16"
+                font-family="Arial, sans-serif"
+                font-weight="bold"
+                dy=".3em"
+              >
+                BS
+              </text>
+            </svg>
+            <div>
+              <span
+                class="block text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors"
+                >BrijeshSajeev</span
+              >
+              <span class="block text-xs text-slate-500">@BrijeshSajeev</span>
+            </div>
+          </a>
+          <a
+            class="flex items-center gap-3 group"
+            href="https://github.com/gajendrajena"
+            target="_blank"
+          >
+            <svg
+              class="w-10 h-10 rounded-full border-2 border-white shadow-sm ring-1 ring-slate-200 group-hover:ring-indigo-400 transition-all"
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="GajendraJena avatar"
+            >
+              <circle cx="20" cy="20" r="20" fill="#6366F1" />
+              <text
+                x="50%"
+                y="54%"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="16"
+                font-family="Arial, sans-serif"
+                font-weight="bold"
+                dy=".3em"
+              >
+                GJ
+              </text>
+            </svg>
+            <div>
+              <span
+                class="block text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors"
+                >GajendraJena</span
+              >
+              <span class="block text-xs text-slate-500">@gajendrajena</span>
+            </div>
+          </a>
+        </div>
+      </section>
+      <!-- Footer -->
+      <footer class="mt-20 pt-8 border-t border-slate-100 text-center">
+        <div class="flex items-center justify-center gap-6 mb-4">
+          <span
+            class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"
+          >
+            Built with
+            <span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded"
+              >Alpine.js</span
+            >
+          </span>
+          <span
+            class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"
+          >
+            Styled with
+            <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded"
+              >Tailwind CSS</span
+            >
+          </span>
+        </div>
+        <p
+          class="text-slate-400 text-[11px] font-medium uppercase tracking-tight"
+        >
+          Selectra Component Library © 2026. All rights reserved.
+        </p>
+      </footer>
+    </div>
+  </body>
 </html>
